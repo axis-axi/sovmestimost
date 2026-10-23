@@ -1,0 +1,1955 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Разбор совместимости пары по матрице</title><meta name="description" content="Введите две даты рождения и получите готовый разбор совместимости: PDF или Word, на выбор три цветовые гаммы."></head><body style="margin:0">
+<!-- ==== РАЗБОР СОВМЕСТИМОСТИ. В Tilda это блок 1 из 4: стили ==== -->
+<link rel="stylesheet" href="fonts.css">
+<style>
+/* ===== РАЗБОР СОВМЕСТИМОСТИ · СТИЛИ ===== */
+.matrix-app.sov-app{
+  --mx-bg:#F8F3EA; --mx-bg2:#EFE3D2; --mx-card:#FCF8F1;
+  --mx-wine:#5E1A1E; --mx-wine2:#7A2A2E; --mx-wine-dk:#3B0E12;
+  --mx-gold:#C6A15B; --mx-gold-dp:#A8823C; --mx-gold-lt:#E7D3A8;
+  --mx-line:#DCCBAA; --mx-hair:rgba(198,161,91,.32);
+  --mx-ink:#3A2A22; --mx-ink2:#7C6B5C;
+  --mx-grad-gold:linear-gradient(135deg,var(--mx-gold-lt) 0%,var(--mx-gold) 46%,var(--mx-gold-dp) 100%);
+  --mx-gold-rgb:198,161,91; --mx-glow-rgb:214,183,131; --mx-bgA:#FCF8F1; --mx-bgB:#F6EFE4; --mx-bgC:#EFE4D3; --mx-bgD:#E9DCC8; --mx-shadow-rgb:58,42,34; --mx-btn-rgb:59,14,18;
+  --mx-disc1:#FFFEFA; --mx-disc2:#F6EAD2; --mx-disc3:#E4CB9B; --mx-btn-ink:#F6E9D6;
+  --mx-serif:'Playfair Display',Georgia,'Times New Roman',serif;
+  --mx-sans:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mx-script:'Marck Script','Playfair Display',cursive;
+  position:relative; overflow-x:hidden; isolation:isolate;
+  background:
+    radial-gradient(760px 520px at 68% 4%, rgba(255,255,255,.95) 0%, rgba(255,255,255,0) 62%),
+    radial-gradient(620px 620px at 96% 34%, rgba(var(--mx-glow-rgb),.30) 0%, rgba(var(--mx-glow-rgb),0) 68%),
+    radial-gradient(720px 720px at 4% 88%, rgba(var(--mx-gold-rgb),.16) 0%, rgba(var(--mx-gold-rgb),0) 66%),
+    linear-gradient(163deg,var(--mx-bgA) 0%,var(--mx-bgB) 38%,var(--mx-bgC) 72%,var(--mx-bgD) 100%);
+  color:var(--mx-ink); font-family:var(--mx-sans); font-size:16px; line-height:1.62;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  padding:56px 16px 72px;
+}
+.sov-app *,.sov-app *:before,.sov-app *:after{box-sizing:border-box;}
+.sov-app p{margin:0 0 14px;}
+.sov-app h1,.sov-app h2,.sov-app h3,.sov-app h4{margin:0;font-weight:500;font-family:var(--mx-serif);}
+.sov-app svg{max-width:100%;}
+.sov-wrap{max-width:860px;margin:0 auto;position:relative;}
+
+/* ---------- шапка и форма ---------- */
+.sov-hero{text-align:center;margin:0 0 34px;}
+.sov-brand{font-family:var(--mx-serif);text-transform:uppercase;letter-spacing:.26em;font-size:15px;color:var(--mx-wine);}
+.sov-hero .sov-brandsub{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mx-gold-dp);margin-top:4px;}
+.sov-app h1.sov-h1{font-size:clamp(32px,6.2vw,56px);line-height:1.04;text-transform:uppercase;letter-spacing:.022em;color:var(--mx-wine);margin:26px 0 12px;}
+.sov-script{font-family:var(--mx-script);font-size:clamp(26px,4.4vw,38px);line-height:1.1;
+  background:var(--mx-grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;margin:0 0 14px;}
+.sov-lead{max-width:560px;margin:0 auto;color:var(--mx-ink2);font-size:15px;}
+
+.sov-eyebrow{display:flex;align-items:center;justify-content:center;gap:12px;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--mx-gold-dp);font-weight:500;line-height:1.3;text-align:center;}
+.sov-eyebrow i{display:block;flex:0 1 38px;height:1px;background:linear-gradient(90deg,transparent,var(--mx-gold));}
+.sov-eyebrow i:last-child{background:linear-gradient(270deg,transparent,var(--mx-gold));}
+
+.sov-card{position:relative;background:var(--mx-card);border:1px solid var(--mx-line);padding:34px 34px 30px;box-shadow:0 26px 54px -40px rgba(var(--mx-shadow-rgb),.5);}
+.sov-card:before{content:"";position:absolute;inset:6px;border:1px solid rgba(var(--mx-gold-rgb),.2);pointer-events:none;}
+.sov-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px 26px;margin:0 0 6px;}
+.sov-person{display:flex;flex-direction:column;gap:10px;}
+.sov-person .sov-cap{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--mx-gold-dp);font-weight:500;}
+.sov-field{width:100%;height:50px;padding:0 16px;font:400 16px var(--mx-sans);color:var(--mx-ink);background:#fff;border:1px solid var(--mx-line);border-radius:0;outline:0;transition:border-color .2s, box-shadow .2s;-webkit-appearance:none;appearance:none;}
+.sov-field:focus{border-color:var(--mx-gold);box-shadow:0 0 0 3px rgba(var(--mx-gold-rgb),.22);}
+.sov-field::placeholder{color:#B5A590;}
+select.sov-field{background-image:linear-gradient(45deg,transparent 50%,var(--mx-gold-dp) 50%),linear-gradient(135deg,var(--mx-gold-dp) 50%,transparent 50%);background-position:calc(100% - 22px) 22px,calc(100% - 16px) 22px;background-size:6px 6px;background-repeat:no-repeat;padding-right:40px;}
+.sov-label{display:block;margin:20px 0 8px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--mx-gold-dp);font-weight:500;}
+.sov-check{display:flex;align-items:center;gap:10px;margin:14px 0 0;font-size:14px;color:var(--mx-ink2);cursor:pointer;}
+.sov-check input{width:18px;height:18px;accent-color:var(--mx-wine);margin:0;}
+.sov-err{display:none;margin:16px 0 0;padding:12px 16px;border:1px solid #D9B4B4;background:#FBF1F0;color:#9A2B2B;font-size:14px;}
+.sov-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:52px;padding:0 30px;border:0;border-radius:0;cursor:pointer;
+  font:500 11.5px var(--mx-sans);letter-spacing:.22em;text-transform:uppercase;color:var(--mx-btn-ink);
+  background:linear-gradient(160deg,var(--mx-wine2),var(--mx-wine) 52%,var(--mx-wine-dk));box-shadow:0 14px 26px -16px rgba(var(--mx-btn-rgb),.8);transition:transform .2s, box-shadow .2s, opacity .2s;}
+.sov-btn:hover{transform:translateY(-1px);box-shadow:0 18px 30px -16px rgba(var(--mx-btn-rgb),.85);}
+.sov-btn:disabled{opacity:.6;cursor:default;transform:none;}
+.sov-btn.is-ghost{background:transparent;color:var(--mx-wine);border:1px solid var(--mx-gold);box-shadow:none;}
+.sov-btn.is-ghost:hover{background:rgba(var(--mx-gold-rgb),.12);}
+.sov-submit{margin-top:26px;text-align:center;}
+.sov-privacy{margin:16px 0 0;text-align:center;font-size:12.5px;color:var(--mx-ink2);}
+
+/* ---------- панель выгрузки ---------- */
+#sov-result{display:none;margin-top:56px;}
+.sov-bar{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:0 0 34px;}
+
+/* ---------- отчёт ---------- */
+.sov-report{background:var(--mx-card);border:1px solid var(--mx-line);padding:56px 52px 48px;box-shadow:0 26px 54px -40px rgba(var(--mx-shadow-rgb),.5);position:relative;}
+.sov-report:before{content:"";position:absolute;inset:6px;border:1px solid rgba(var(--mx-gold-rgb),.2);pointer-events:none;}
+.sov-cover{text-align:center;padding:10px 0 34px;border-bottom:1px solid var(--mx-hair);margin-bottom:34px;}
+.sov-cover .sov-eyebrow{margin:14px 0 0;}
+.sov-cover h1{font-size:clamp(30px,5.6vw,50px);line-height:1.05;text-transform:uppercase;letter-spacing:.022em;color:var(--mx-wine);margin:22px 0 18px;}
+.sov-who{font-family:var(--mx-serif);font-size:clamp(22px,3.6vw,30px);color:var(--mx-ink);}
+.sov-dates{margin-top:6px;color:var(--mx-gold-dp);letter-spacing:.14em;font-size:14px;white-space:pre;}
+.sov-type{margin-top:8px;color:var(--mx-ink2);font-size:13px;}
+.sov-intro{margin:0 0 8px;color:var(--mx-ink);}
+.sov-sec{padding-top:34px;margin-top:34px;border-top:1px solid var(--mx-hair);}
+.sov-sec:first-of-type{border-top:0;}
+.sov-sec > .sov-eyebrow{justify-content:flex-start;}
+.sov-sec > .sov-eyebrow i:first-child{display:none;}
+.sov-sec h2{font-size:clamp(25px,4vw,34px);line-height:1.15;color:var(--mx-wine);margin:10px 0 12px;}
+.sov-rule{height:1px;margin:0 0 22px;background:linear-gradient(90deg,var(--mx-gold),rgba(var(--mx-gold-rgb),.22) 34%,transparent 78%);}
+.sov-group{margin:54px 0 0;text-align:center;}
+.sov-group .sov-eyebrow{font-size:11.5px;color:var(--mx-wine);}
+.sov-mute{color:var(--mx-ink2);font-size:14.5px;}
+.sov-group .sov-mute{margin:8px 0 0;}
+.sov-item{margin:26px 0 0;padding-top:24px;border-top:1px solid var(--mx-hair);}
+.sov-item:first-of-type{border-top:0;padding-top:0;margin-top:8px;}
+.sov-ihead{display:flex;align-items:center;gap:16px;margin:0 0 14px;}
+.sov-iname{font-family:var(--mx-serif);font-size:21px;color:var(--mx-wine);line-height:1.2;}
+.sov-tag{display:block;margin-top:5px;font-family:var(--mx-sans);font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--mx-gold-dp);font-weight:500;}
+.sov-disc{flex:0 0 auto;width:54px;height:54px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 34% 28%,var(--mx-disc1),var(--mx-disc2) 58%,var(--mx-disc3) 100%);border:1px solid var(--mx-gold);
+  box-shadow:0 0 0 3px rgba(255,255,255,.7),0 0 0 4.5px rgba(var(--mx-gold-rgb),.6),0 10px 20px -12px rgba(120,90,40,.6);
+  font-family:var(--mx-serif);font-weight:600;font-size:22px;color:var(--mx-wine);line-height:1;}
+.sov-sub{font-family:var(--mx-serif);font-style:italic;font-size:19px;color:var(--mx-ink2);margin:0 0 16px;}
+.sov-h3{font-family:var(--mx-sans)!important;font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:600!important;margin:24px 0 10px;color:var(--mx-gold-dp);}
+.sov-h3:before{content:"✦  ";}
+.sov-h3.neg{color:var(--mx-wine);}
+.sov-app strong{font-weight:600;color:var(--mx-ink);}
+.sov-list{margin:0 0 16px;padding-left:24px;}
+.sov-list li{margin:0 0 9px;padding-left:4px;}
+.sov-list li::marker{color:var(--mx-gold-dp);font-weight:600;}
+.sov-note{margin:0 0 16px;padding:10px 16px;border-left:2px solid var(--mx-gold);background:rgba(var(--mx-gold-rgb),.08);font-size:14.5px;color:var(--mx-ink2);font-style:italic;}
+.sov-box{margin:22px 0 0;padding:20px 24px;border:1px solid var(--mx-gold);background:rgba(255,255,255,.55);}
+.sov-box h3{font-size:21px;color:var(--mx-wine);margin:0 0 8px;}
+.sov-codes{display:flex;align-items:center;justify-content:center;gap:18px;margin:6px 0 20px;}
+.sov-codes em{font-style:normal;font-family:var(--mx-serif);font-size:26px;color:var(--mx-gold-dp);}
+.sov-codes .sov-disc{width:64px;height:64px;font-size:26px;}
+.sov-rows{display:grid;grid-template-columns:1fr 1fr;gap:0 34px;margin:26px 0 0;}
+.sov-row{display:flex;justify-content:space-between;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--mx-hair);font-size:14.5px;}
+.sov-row span{color:var(--mx-ink2);}
+.sov-row b{font-family:var(--mx-serif);font-size:18px;color:var(--mx-wine);font-weight:600;white-space:nowrap;}
+.sov-end{text-align:center;}
+.sov-end .sov-rule{background:linear-gradient(90deg,transparent,var(--mx-gold),transparent);}
+.sov-end p{text-align:left;}
+.sov-star{color:var(--mx-gold);font-size:22px;margin:22px 0 8px;}
+.sov-foot{text-align:center!important;font-size:12.5px;}
+.sov-diagram{width:100%;display:flex;justify-content:center;}
+.matrix-app.sov-app .mx-matrix{width:min(560px,100%);min-width:0;}
+.sov-printbar{display:none;}
+
+@media (max-width:720px){
+  .matrix-app.sov-app{padding:34px 10px 56px;}
+  .sov-card{padding:26px 20px 24px;}
+  .sov-grid{grid-template-columns:1fr;}
+  .sov-report{padding:34px 20px 32px;}
+  .sov-rows{grid-template-columns:1fr;}
+  .sov-disc{width:46px;height:46px;font-size:19px;}
+  .sov-iname{font-size:18px;}
+  .sov-btn{width:100%;}
+  .sov-codes .sov-disc{width:54px;height:54px;font-size:22px;}
+}
+
+/* ---------- печать и PDF ---------- */
+@page{size:A4;margin:16mm 14mm;}
+@media print{
+  html,body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .sov-printbar,.sov-bar{display:none!important;}
+  .matrix-app.sov-app{padding:0;background:#fff;overflow:visible;}
+  .sov-cover{padding:46mm 0 18mm;margin-bottom:22mm;}
+  .sov-intro{max-width:140mm;margin:0 auto;text-align:center;}
+  .sov-intro + .sov-sec{break-before:page;page-break-before:always;border-top:0;margin-top:0;padding-top:0;}
+  .sov-report{border:0;box-shadow:none;padding:0;background:transparent;}
+  .sov-report:before{display:none;}
+  .sov-sec h2,.sov-ihead,.sov-h3,.sov-eyebrow,.sov-rule{break-after:avoid;page-break-after:avoid;}
+  .sov-box,.sov-note,.sov-row{break-inside:avoid;page-break-inside:avoid;}
+  .sov-group{break-before:page;page-break-before:always;margin-top:0;}
+  .sov-sec{margin-top:26px;padding-top:26px;}
+  .sov-diagram{break-inside:avoid;}
+  /* ореол вокруг матрицы это градиент в прозрачность: в PDF он превращается в чёрное кольцо, на белой бумаге он не нужен */
+  .matrix-app .mx-matrix-outer:before{display:none!important;}
+  .matrix-app .mx-matrix svg circle[fill^="url("]{display:none!important;}
+  .matrix-app.sov-app .mx-matrix{width:112mm;}
+  .sov-app p,.sov-list li{orphans:3;widows:3;}
+}
+.sov-app.sov-print{padding:0 16px 48px;}
+.sov-app.sov-print .sov-report{max-width:860px;margin:0 auto;}
+@media screen{
+  .sov-printbar{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;position:sticky;top:0;z-index:5;padding:12px 16px;background:var(--mx-wine-dk);color:var(--mx-btn-ink);font:400 13px 'Montserrat',sans-serif;}
+  .sov-printbar button{height:36px;padding:0 18px;border:1px solid var(--mx-gold);background:transparent;color:var(--mx-btn-ink);font:500 11px 'Montserrat',sans-serif;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;}
+}
+.sov-links{text-align:center;margin:1.4em 0 .6em;line-height:1.9}.sov-links a{color:var(--mx-wine);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- цветовые гаммы ---------- */
+.matrix-app.sov-app[data-pal="lilac"]{
+  --mx-bg:#FFFFFF; --mx-bg2:#F6F0FB; --mx-card:#FFFFFF;
+  --mx-wine:#5E3A8C; --mx-wine2:#7A56A8; --mx-wine-dk:#3F2563;
+  --mx-gold:#C6A15B; --mx-gold-dp:#A8823C; --mx-gold-lt:#EBD9B2;
+  --mx-line:#E3D8EE; --mx-hair:rgba(198,161,91,.34);
+  --mx-ink:#2F2A38; --mx-ink2:#6F6680;
+  --mx-gold-rgb:198,161,91; --mx-glow-rgb:205,185,230; --mx-shadow-rgb:63,37,99; --mx-btn-rgb:63,37,99;
+  --mx-bgA:#FFFFFF; --mx-bgB:#FBF8FF; --mx-bgC:#F3ECFA; --mx-bgD:#EBE0F5;
+  --mx-disc1:#FFFFFF; --mx-disc2:#F3ECFA; --mx-disc3:#D8C6EE; --mx-btn-ink:#FFFFFF;
+}
+.matrix-app.sov-app[data-pal="tealpink"]{
+  --mx-bg:#F2FAFA; --mx-bg2:#E3F3F3; --mx-card:#FBFEFE;
+  --mx-wine:#0F6B70; --mx-wine2:#1D8A90; --mx-wine-dk:#0A4A4E;
+  --mx-gold:#E58BA8; --mx-gold-dp:#C94F7C; --mx-gold-lt:#F6CBD8;
+  --mx-line:#CBE5E6; --mx-hair:rgba(229,139,168,.4);
+  --mx-ink:#1F3436; --mx-ink2:#5B7576;
+  --mx-gold-rgb:229,139,168; --mx-glow-rgb:160,215,215; --mx-shadow-rgb:10,74,78; --mx-btn-rgb:10,74,78;
+  --mx-bgA:#FFFFFF; --mx-bgB:#F2FAFA; --mx-bgC:#E3F3F3; --mx-bgD:#D4EBEC;
+  --mx-disc1:#FFFFFF; --mx-disc2:#E6F5F5; --mx-disc3:#A9D8DA; --mx-btn-ink:#FFFFFF;
+}
+.sov-pal{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin:22px 0 0;}
+.sov-pal-cap{width:100%;text-align:center;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--mx-gold-dp);font-weight:500;}
+.sov-pal button{display:inline-flex;align-items:center;gap:10px;height:42px;padding:0 16px 0 10px;border:1px solid var(--mx-line);background:#fff;color:var(--mx-ink);font:500 12px var(--mx-sans);letter-spacing:.06em;cursor:pointer;transition:border-color .2s, box-shadow .2s;}
+.sov-pal button:hover{border-color:var(--mx-gold);}
+.sov-pal button.is-on{border-color:var(--mx-wine);box-shadow:0 0 0 2px rgba(var(--mx-gold-rgb),.35);}
+.sov-sw{display:inline-block;width:26px;height:26px;border-radius:50%;border:1px solid rgba(0,0,0,.12);}
+.sov-sw[data-s="vino"]{background:linear-gradient(135deg,#F3E8D6 0 50%,#5E1A1E 50% 100%);}
+.sov-sw[data-s="lilac"]{background:linear-gradient(135deg,#FFFFFF 0 34%,#7A56A8 34% 67%,#C6A15B 67% 100%);}
+.sov-sw[data-s="tealpink"]{background:linear-gradient(135deg,#1D8A90 0 50%,#E58BA8 50% 100%);}
+.sov-bar + .sov-pal{margin:-14px 0 30px;}
+
+.sov-club{margin:64px 0 0;padding:38px 30px 30px;text-align:center;background:var(--mx-card);border:1px solid var(--mx-line);box-shadow:0 26px 54px -40px rgba(var(--mx-shadow-rgb),.5);}
+.sov-club-h{font-size:clamp(26px,4.4vw,36px);color:var(--mx-wine);margin:12px 0 12px;}
+.sov-club p{max-width:560px;margin:0 auto 16px;color:var(--mx-ink2);font-size:15px;}
+.sov-club-btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:22px 0 10px;}
+.sov-club-btns a{text-decoration:none;}
+.sov-club-note{font-size:13px!important;margin-bottom:0!important;}
+@media print{.sov-club{display:none!important;}}
+.sov-codes,.sov-item > .sov-iname{break-after:avoid;page-break-after:avoid;}
+@media print{
+  .sov-ihead{break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid;}
+  .sov-sec > h2,.sov-sec > .sov-rule,.sov-sec > .sov-eyebrow,.sov-item > .sov-sub,.sov-item > .sov-note{break-after:avoid;page-break-after:avoid;}
+  .sov-sec > h2 + .sov-rule + .sov-item{break-before:avoid;page-break-before:avoid;}
+  .sov-disc{break-inside:avoid;page-break-inside:avoid;}
+}
+
+/* ---------- МАТРИЦА ---------- */
+.matrix-app .mx-matrix-outer{display:flex;justify-content:center;position:relative;}
+.matrix-app .mx-matrix-outer:before{
+  content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(880px,92%);aspect-ratio:1;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,255,255,.86) 0%,rgba(255,255,255,0) 66%);
+}
+.matrix-app .mx-matrix{
+  position:relative;container-type:inline-size;
+  width:min(1000px, calc(100vh - 185px), calc(100vw - 520px));
+  min-width:300px;--mx-k:1;
+}
+.matrix-app .mx-matrix.is-prog{--mx-k:.9;}
+.matrix-app .mx-matrix svg{display:block;width:100%;height:auto;overflow:visible;}
+.matrix-app .mx-plane{position:absolute;left:8.3333%;top:8.3333%;width:83.3334%;height:83.3334%;}
+.matrix-app .mx-matrix.is-prog .mx-plane{left:12.5%;top:12.5%;width:75%;height:75%;}
+.matrix-app .mx-node{
+  position:absolute;transform:translate(-50%,-50%);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mx-serif);font-weight:600;line-height:1;flex-shrink:0;
+}
+.matrix-app .mx-n-c{
+  width:calc(11cqw*var(--mx-k));height:calc(11cqw*var(--mx-k));font-size:max(14px,calc(4.1cqw*var(--mx-k)));
+  background:radial-gradient(circle at 34% 28%,#FFFEFA,#F6EAD2 58%,#E4CB9B 100%);
+  color:var(--mx-wine);border:1px solid var(--mx-gold);
+  box-shadow:0 0 0 4px rgba(255,255,255,.7), 0 0 0 5.5px rgba(198,161,91,.65),
+             0 0 0 10px rgba(255,255,255,.5), 0 0 0 11px rgba(198,161,91,.28),
+             0 16px 34px -14px rgba(120,90,40,.65);
+}
+.matrix-app .mx-n-o{
+  width:calc(9.4cqw*var(--mx-k));height:calc(9.4cqw*var(--mx-k));font-size:max(12px,calc(3.4cqw*var(--mx-k)));
+  background:linear-gradient(152deg,#7A2A2E,#4A1216 62%,#3B0E12);color:#F3E3C6;
+  border:1px solid var(--mx-gold);
+  box-shadow:0 0 0 3px rgba(255,255,255,.65), 0 0 0 4.5px rgba(198,161,91,.55),
+             0 12px 26px -12px rgba(59,14,18,.75);
+}
+.matrix-app .mx-n-k{
+  width:calc(8.8cqw*var(--mx-k));height:calc(8.8cqw*var(--mx-k));font-size:max(11px,calc(3.1cqw*var(--mx-k)));
+  background:linear-gradient(152deg,#FFFEF9,#F0E2C6);color:var(--mx-wine);border:1px solid var(--mx-gold);
+  box-shadow:0 0 0 3px rgba(255,255,255,.65), 0 0 0 4.5px rgba(198,161,91,.5),
+             0 10px 22px -12px rgba(120,90,40,.55);
+}
+.matrix-app .mx-n-i{
+  width:calc(4.6cqw*var(--mx-k));height:calc(4.6cqw*var(--mx-k));font-size:max(10px,calc(2.2cqw*var(--mx-k)));
+  background:linear-gradient(150deg,#FFFEFA,#FBF3E2);color:var(--mx-ink);border:1px solid rgba(198,161,91,.6);
+  box-shadow:0 0 0 3px rgba(255,255,255,.7), 0 4px 10px -6px rgba(140,110,60,.5);
+}
+.matrix-app .mx-n-i2{
+  width:calc(3.9cqw*var(--mx-k));height:calc(3.9cqw*var(--mx-k));font-size:max(9px,calc(1.95cqw*var(--mx-k)));
+  background:linear-gradient(150deg,#FFFEFA,#FBF3E2);color:var(--mx-ink);border:1px solid rgba(198,161,91,.6);
+  box-shadow:0 0 0 3px rgba(255,255,255,.7), 0 4px 10px -6px rgba(140,110,60,.5);
+}
+.matrix-app .mx-n-g{
+  width:calc(2.5cqw*var(--mx-k));height:calc(2.5cqw*var(--mx-k));font-size:max(8px,calc(1.3cqw*var(--mx-k)));
+  background:linear-gradient(150deg,#FFFEFA,#F8EFDC);color:var(--mx-ink2);border:1px solid rgba(198,161,91,.6);
+  box-shadow:0 0 0 3px rgba(255,255,255,.7);
+}
+.matrix-app .mx-n-r2{
+  width:calc(3.5cqw*var(--mx-k));height:calc(3.5cqw*var(--mx-k));font-size:max(8px,calc(1.75cqw*var(--mx-k)));
+  background:linear-gradient(150deg,#FFFEFA,#F8F0DE);color:var(--mx-ink2);border:1px solid rgba(198,161,91,.55);
+  box-shadow:0 0 0 3px rgba(255,255,255,.6);
+}
+.matrix-app .mx-n-r{
+  width:calc(4cqw*var(--mx-k));height:calc(4cqw*var(--mx-k));font-size:max(9px,calc(2cqw*var(--mx-k)));
+  background:linear-gradient(150deg,#FFFEFA,#F8F0DE);color:var(--mx-ink2);border:1px solid rgba(198,161,91,.55);
+  box-shadow:0 0 0 3px rgba(255,255,255,.6);
+}
+.matrix-app .mx-n-w{
+  width:calc(3.6cqw*var(--mx-k));height:calc(3.6cqw*var(--mx-k));font-size:max(9px,calc(1.8cqw*var(--mx-k)));
+  background:linear-gradient(150deg,#FFFEFA,#F8F0DE);color:var(--mx-ink);border:1px solid rgba(198,161,91,.6);
+  box-shadow:0 0 0 3px rgba(255,255,255,.7);
+}
+/* М — точка СОС на линии благополучия, выделена амброй */
+.matrix-app .mx-n-m{
+  width:calc(3.9cqw*var(--mx-k));height:calc(3.9cqw*var(--mx-k));font-size:max(9px,calc(1.9cqw*var(--mx-k)));
+  background:linear-gradient(150deg,#E8B978,#C98F46);color:#FFFBF2;border:1px solid rgba(160,110,50,.7);
+  box-shadow:0 0 0 3px rgba(255,255,255,.65), 0 6px 14px -8px rgba(150,105,45,.6);
+}
+.matrix-app .mx-ltr{
+  position:absolute;transform:translate(-50%,-50%);
+  font-family:var(--mx-sans);font-size:max(8px,calc(1.65cqw*var(--mx-k)));line-height:1;
+  font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#A8823C;
+  /* чёткий контур в один пиксель вместо размытого ореола */
+  text-shadow:
+     1px 0 0 #F6F0E5, -1px 0 0 #F6F0E5,  0 1px 0 #F6F0E5,  0 -1px 0 #F6F0E5,
+     1px 1px 0 #F6F0E5, -1px -1px 0 #F6F0E5, 1px -1px 0 #F6F0E5, -1px 1px 0 #F6F0E5;
+}
+.matrix-app .mx-glyph{
+  position:absolute;transform:translate(-50%,-50%);font-size:max(11px,calc(2.8cqw*var(--mx-k)));line-height:1;
+  color:var(--mx-wine);
+}
+/* в личной матрице вокруг значков теснее — там они мельче */
+.matrix-app .mx-glyph-sm{font-size:max(9px,calc(2.2cqw*var(--mx-k)));}
+
+</style>
+<!-- ==== РАЗБОР СОВМЕСТИМОСТИ. В Tilda это блок 2 из 4: форма и место для разбора ==== -->
+<div class="matrix-app sov-app" id="sov-root">
+<div class="sov-wrap">
+
+  <div class="sov-hero">
+    <div class="sov-brand">Точка опоры</div>
+    <div class="sov-brandsub">Матрица совместимости</div>
+    <h1 class="sov-h1">Разбор вашей пары</h1>
+    <div class="sov-script">по всем позициям матрицы</div>
+    <p class="sov-lead">Введите даты рождения двух людей. Страница соберёт полный разбор: от первой встречи до предназначения союза. Готовый разбор можно выбрать в одной из трёх цветовых гамм и сохранить в PDF или Word.</p>
+  </div>
+
+  <form class="sov-card" id="sov-form" novalidate autocomplete="off">
+    <div class="sov-grid">
+      <div class="sov-person">
+        <div class="sov-cap">Первый партнёр</div>
+        <input class="sov-field" id="sov-na" type="text" placeholder="Имя, по желанию" maxlength="40">
+        <input class="sov-field" id="sov-da" type="text" inputmode="numeric" placeholder="ДД.ММ.ГГГГ" maxlength="10" aria-label="Дата рождения первого партнёра">
+      </div>
+      <div class="sov-person">
+        <div class="sov-cap">Второй партнёр</div>
+        <input class="sov-field" id="sov-nb" type="text" placeholder="Имя, по желанию" maxlength="40">
+        <input class="sov-field" id="sov-db" type="text" inputmode="numeric" placeholder="ДД.ММ.ГГГГ" maxlength="10" aria-label="Дата рождения второго партнёра">
+      </div>
+    </div>
+
+    <div class="sov-pal" data-role="pal">
+      <div class="sov-pal-cap">Цвет оформления разбора</div>
+      <button type="button" data-pal="vino" class="is-on"><span class="sov-sw" data-s="vino"></span>Беж и вино</button>
+      <button type="button" data-pal="lilac"><span class="sov-sw" data-s="lilac"></span>Сирень и золото</button>
+      <button type="button" data-pal="tealpink"><span class="sov-sw" data-s="tealpink"></span>Бирюза и розовый</button>
+    </div>
+
+    <div class="sov-err" id="sov-err" role="alert"></div>
+    <div class="sov-submit"><button class="sov-btn" id="sov-go" type="submit">Получить разбор</button></div>
+    <p class="sov-privacy">Даты никуда не отправляются: расчёт идёт прямо в вашем браузере.</p>
+  </form>
+
+  <div id="sov-result">
+    <div class="sov-bar">
+      <button class="sov-btn" id="sov-pdf" type="button">Скачать PDF</button>
+      <button class="sov-btn" id="sov-word" type="button">Скачать Word</button>
+      <button class="sov-btn is-ghost" id="sov-again" type="button">Рассчитать другую пару</button>
+    </div>
+    <div class="sov-pal" data-role="pal">
+      <div class="sov-pal-cap">Цвет оформления разбора</div>
+      <button type="button" data-pal="vino" class="is-on"><span class="sov-sw" data-s="vino"></span>Беж и вино</button>
+      <button type="button" data-pal="lilac"><span class="sov-sw" data-s="lilac"></span>Сирень и золото</button>
+      <button type="button" data-pal="tealpink"><span class="sov-sw" data-s="tealpink"></span>Бирюза и розовый</button>
+    </div>
+    <div class="sov-report" id="sov-out"></div>
+  </div>
+
+
+  <div class="sov-club">
+    <div class="sov-eyebrow"><i></i>Клуб и канал<i></i></div>
+    <h2 class="sov-club-h">Клуб Точка опоры</h2>
+    <p>Обучение по подписке: девять факультетов и записанные уроки, которые можно смотреть в своём темпе. Матрица, психология, нейросети, прогностика и всё, что нужно практику в работе.</p>
+    <div class="sov-club-btns">
+      <a class="sov-btn" href="https://tochka-opory.lpxl.ru/podpiska" target="_blank" rel="noopener">Перейти в клуб</a>
+      <a class="sov-btn is-ghost" href="https://t.me/nadin_matrix" target="_blank" rel="noopener">Телеграм-канал</a>
+    </div>
+  </div>
+
+</div>
+</div>
+<!-- ==== ЯДРО. В Tilda это блок 3 из 4 ==== -->
+<script>
+/* ============================================================
+   ЯДРО КАЛЬКУЛЯТОРОВ ПО МАТРИЦЕ СУДЬБЫ
+   Версия 1.0 · сверено 02.09.2026
+
+   Здесь только расчёты, геометрия диаграммы и самопроверки.
+   Интерфейса нет: файл ничего не ищет в вёрстке и ничего не рисует
+   сам, кроме диаграммы в переданный ему элемент.
+
+   ПРАВИЛО: формулы в этом файле не меняются. Они сверены по трём
+   источникам — контрольная дата 17.01.1989 из инструкции, разбор
+   07.04.1991 с калькулятора beloesolnce.ru и гайд «Зоны и точки
+   в матрице судьбы». При запуске файл сам себя проверяет и пишет
+   результат в консоль браузера.
+
+   Как пользоваться: подключить файл первым, дальше обращаться
+   через window.MX — например MX.calculateMatrix(7, 4, 1991).
+   В Tilda это отдельный блок T123 перед блоком с интерфейсом.
+   ============================================================ */
+window.MX = (function(){
+"use strict";
+
+/* ============ 1. КАНОН: свёртка и матрица ============ */
+function reduce(n){
+  while(n > 22) n = String(n).split('').reduce(function(s,d){return s + (+d);},0);
+  return n === 0 ? 22 : n;
+}
+
+function calculateMatrix(day, month, year){
+  var a = reduce(day);
+  var b = reduce(month);
+  var c = reduce(String(year).split('').reduce(function(s,d){return s+(+d);},0));
+  var d = reduce(a + b + c);
+  var e = reduce(a + b + c + d);
+  var f = reduce(a + b);
+  var g = reduce(b + c);
+  var y = reduce(c + d);
+  var k = reduce(a + d);
+  return {a:a,b:b,c:c,d:d,e:e,f:f,g:g,y:y,k:k};
+}
+
+/* Родовые точки в углах.
+   'center' — как на образце beloesolnce: угол + центр
+   'sila'   — как записано в инструкции: угол + сила рода
+   Меняется одной строкой.                                            */
+var RODOVYE_MODE = 'center';
+
+function extend(M){
+  M.a1 = reduce(M.a + M.e); M.a2 = reduce(M.a + M.a1); M.a3 = reduce(M.a1 + M.e);
+  M.b1 = reduce(M.b + M.e); M.b2 = reduce(M.b + M.b1); M.b3 = reduce(M.b1 + M.e);
+  M.d1 = reduce(M.d + M.e); M.d2 = reduce(M.d + M.d1);
+  M.c1 = reduce(M.c + M.e); M.c2 = reduce(M.c + M.c1);
+
+  M.x  = reduce(M.d1 + M.c1);
+  M.x1 = reduce(M.d1 + M.x);
+  M.x2 = reduce(M.x  + M.c1);
+
+  M.e1 = reduce(M.f + M.g + M.y + M.k);
+  var base = (RODOVYE_MODE === 'center') ? M.e : M.e1;
+  ['f','g','y','k'].forEach(function(key){
+    var corner = M[key];
+    var s1 = reduce(base + corner);
+    M[key+'_s1'] = s1;
+    M[key+'_s2'] = reduce(corner + s1);
+  });
+
+  M.h = reduce(M.b + M.d); M.j = reduce(M.a + M.c); M.m = reduce(M.h + M.j);
+  M.n = reduce(M.f + M.y); M.t = reduce(M.g + M.k); M.z = reduce(M.n + M.t);
+  M.s = reduce(M.m + M.z);
+  /* контроль из гайда: 3-е предназначение может быть только 3,6,9,12,15,18,21 */
+  M._ok = ([3,6,9,12,15,18,21].indexOf(M.s) !== -1);
+  M.planet = reduce(M.z + M.s);
+  M.inner = reduce(M.e + M.e1);
+  return M;
+}
+
+/* Матрица пары: складываем одноимённые точки обеих матриц, дальше
+   внутренняя структура считается теми же формулами, что и личная:
+   I=Е+А, L=Е+Б, V=Е+В, H=Е+Г, X=H+V, T=H+X, Z=X+V. */
+function pairMatrix(M1, M2){
+  var P = {};
+  ['a','b','c','d','e','f','g','y','k'].forEach(function(key){
+    P[key] = reduce(M1[key] + M2[key]);
+  });
+  P._pair = true;
+  return extend(P);
+}
+
+/* ============ 2. КАНОН: прогностика ============ */
+function calculatePrognosis(M){
+  var main=[{age:0,v:M.a},{age:10,v:M.f},{age:20,v:M.b},{age:30,v:M.g},
+            {age:40,v:M.c},{age:50,v:M.y},{age:60,v:M.d},{age:70,v:M.k}];
+  var all=[];
+  for(var i=0;i<8;i++){
+    var cur=main[i], next=main[(i+1)%8];
+    all.push({from:cur.age,to:cur.age+1.25,value:cur.v,isMain:true});
+    var mid=reduce(cur.v+next.v), sub1=reduce(cur.v+mid), sub3=reduce(mid+next.v);
+    var subVals=[reduce(cur.v+sub1),sub1,reduce(sub1+mid),mid,reduce(mid+sub3),sub3,reduce(sub3+next.v)];
+    for(var j=0;j<7;j++){var sf=cur.age+1.25*(j+1);all.push({from:sf,to:sf+1.25,value:subVals[j],isMain:false,isHalf:(j===3)});}
+  }
+  return all;
+}
+
+/* Подпись периода ЦЕЛЫМИ годами. 1,25 года = ровно 15 месяцев,
+   поэтому десятичной арифметики по годам здесь нет вообще.        */
+/* 'exact' — начало периода годами и месяцами: шкала идёт без пропусков.
+   'years' — только целые года, как на белом солнце (тогда 4-5 и 9-10 выпадают,
+             потому что в десятилетии 8 периодов, а годовых окон 10).           */
+var LABEL_MODE = 'years';
+
+function fmtAge(a){
+  if(a % 5 === 0) return a + ' лет';
+  var m = Math.round(a * 12);                /* 1,25 года = ровно 15 месяцев */
+  return Math.floor(m / 12) + 'г ' + (m % 12) + 'м';
+}
+/* Лет 80, а периодов 64 — один к одному они не ложатся.
+   Каждый целый год относим к периоду, внутри которого лежит его середина,
+   и подписываем период всем доставшимся ему диапазоном лет. Тогда шкала
+   идёт без пропусков, а подпись стоит на одном луче со своей энергией. */
+var YEARS_BY_PERIOD = (function(){
+  var map = [];
+  for(var n = 0; n < 80; n++){
+    var i = Math.floor((n + 0.5) / 1.25);
+    if(!map[i]) map[i] = [n, n]; else map[i][1] = n;
+  }
+  return map;
+})();
+/* Подпись периода на кольце. Правило: всегда ровно один год, N-(N+1),
+   по году, в котором период начинается. Двухлетних диапазонов быть не должно.
+   Следствие: в каждом десятилетии два года остаются без подписи —
+   периодов восемь, а годов десять. Так же устроено на beloesolnce.
+   Все годы без исключения показывает таблица через yearByYear. */
+function ringLabel(from){
+  var y = Math.floor(from);
+  return y + '-' + (y + 1);
+}
+
+function yearsOfPeriod(from){
+  var r = YEARS_BY_PERIOD[Math.round(from / 1.25)];
+  return r ? (r[0] + '-' + (r[1] + 1)) : '';
+}
+
+function periodLabel(p, mode){
+  mode = mode || LABEL_MODE;
+  if(p.from % 5 === 0) return p.from + ' лет';
+  if(mode === 'years'){ var y = Math.floor(p.from); return y + '-' + (y + 1); }
+  return fmtAge(p.from);
+}
+function periodRange(p){ return fmtAge(p.from) + ' \u2013 ' + fmtAge(p.to); }
+
+/* Возраст целыми годами и месяцами */
+function ageYM(birth, now){
+  var y = now.getFullYear() - birth.getFullYear();
+  var m = now.getMonth() - birth.getMonth();
+  if(now.getDate() < birth.getDate()) m--;
+  if(m < 0){ y--; m += 12; }
+  return {y:y, m:m, months: y*12 + m};
+}
+function plural(n, one, few, many){
+  var n10 = n % 10, n100 = n % 100;
+  if(n10 === 1 && n100 !== 11) return one;
+  if(n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14)) return few;
+  return many;
+}
+
+/* ============ 3. Геометрия диаграммы ============ */
+var CX = 300, CY = 300;
+/* Тройки энергий собраны в плотную связку у своей крупной точки:
+   зазор до неё 9 единиц, между собой 7. К центру остаётся свободное поле,
+   как на образце. Доли получены из радиусов кругов.                     */
+function WELL_T(){  return 0.4663; }   /* К и Л */
+function WELL_T2(){ return 0.2856; }   /* белые круги за ними */
+var PT = {
+  A:[92,300], B:[300,92], V:[508,300], G:[300,508], D:[300,300],
+  E:[153,153], J:[447,153], I:[447,447], Z:[153,447]
+};
+function lerp(p,q,t){ return [p[0]+(q[0]-p[0])*t, p[1]+(q[1]-p[1])*t]; }
+function pol(r,deg){ var a=deg*Math.PI/180; return [CX + r*Math.cos(a), CY - r*Math.sin(a)]; }
+function ang(age){ return 180 - (age/80)*360; }
+function pc(v){ return (v/6).toFixed(3) + '%'; }
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ---- SVG каркаса ---- */
+function svgFrame(M, showPrognosis, isPair){
+  var s = '';
+  var gold='#C6A15B', light='#D9C7A7', ink='#3E2B23';
+
+  /* золотая палитра диаграммы */
+  s += '<defs>'
+     + '<radialGradient id="mxdGlow" cx="50%" cy="46%" r="54%">'
+     +   '<stop offset="0%" stop-color="#FFFFFF" stop-opacity=".92"/>'
+     +   '<stop offset="55%" stop-color="#F7ECD6" stop-opacity=".5"/>'
+     +   '<stop offset="100%" stop-color="#EFE3D2" stop-opacity="0"/>'
+     + '</radialGradient>'
+     + '<linearGradient id="mxdGold" x1="0" y1="0" x2="1" y2="1">'
+     +   '<stop offset="0%" stop-color="#E4CF9F"/><stop offset="45%" stop-color="#C6A15B"/>'
+     +   '<stop offset="100%" stop-color="#A8823C"/>'
+     + '</linearGradient>'
+     + '</defs>';
+
+  s += '<circle cx="300" cy="300" r="252" fill="url(#mxdGlow)"/>';
+  s += '<circle class="mx-draw" cx="300" cy="300" r="226" fill="none" stroke="url(#mxdGold)" stroke-width="1.7" opacity=".95"/>';
+  s += '<circle cx="300" cy="300" r="219" fill="none" stroke="'+gold+'" stroke-width=".7" opacity=".38"/>';
+  s += '<circle cx="300" cy="300" r="163" fill="none" stroke="'+gold+'" stroke-width=".7" opacity=".3"/>';
+
+  if(showPrognosis){
+    /* светлая полоса, на которой лежат бусины арканов */
+    s += '<circle cx="300" cy="300" r="290" fill="none" stroke="rgba(255,251,242,.72)" stroke-width="44"/>';
+    s += '<circle cx="300" cy="300" r="290" fill="none" stroke="'+gold+'" stroke-width="44" opacity=".05"/>';
+    s += '<circle cx="300" cy="300" r="268" fill="none" stroke="'+light+'" stroke-width=".9" opacity=".85"/>';
+    s += '<circle cx="300" cy="300" r="312" fill="none" stroke="'+light+'" stroke-width=".9" opacity=".85"/>';
+    s += '<circle cx="300" cy="300" r="376" fill="none" stroke="'+light+'" stroke-width=".8" stroke-dasharray="2 7" opacity=".6"/>';
+  }
+
+  /* ромб и квадрат — золотом */
+  s += '<polygon class="mx-draw mx-draw-2" points="300,92 508,300 300,508 92,300" fill="none" stroke="url(#mxdGold)" stroke-width="1.5" opacity=".95"/>';
+  s += '<polygon class="mx-draw mx-draw-2" points="153,153 447,153 447,447 153,447" fill="none" stroke="url(#mxdGold)" stroke-width="1.5" opacity=".95"/>';
+  /* оси */
+  s += '<line class="mx-draw mx-draw-3" x1="92" y1="300" x2="508" y2="300" stroke="'+gold+'" stroke-width="1" opacity=".6"/>';
+  s += '<line class="mx-draw mx-draw-3" x1="300" y1="92" x2="300" y2="508" stroke="'+gold+'" stroke-width="1" opacity=".6"/>';
+  /* родовые диагонали: Е-И мужская, Ж-З женская — приглушены, чтобы не спорить с золотом */
+  s += '<line x1="153" y1="153" x2="447" y2="447" stroke="#8A96C2" stroke-width="1.1" opacity=".5"/>';
+  s += '<line x1="447" y1="153" x2="153" y2="447" stroke="#C89A8C" stroke-width="1.1" opacity=".5"/>';
+  /* Линия благополучия соединяет точки К и Л. Координаты берём из тех же
+     долей, что и сами точки, иначе линия проходит мимо их центров. */
+  var wR = 208 * (1 - WELL_T());
+  var wK = [300, 300 + wR], wL = [300 + wR, 300];
+  s += '<line x1="'+(wK[0]-11.3).toFixed(1)+'" y1="'+(wK[1]+11.3).toFixed(1)+'"'
+     + ' x2="'+(wL[0]+11.3).toFixed(1)+'" y2="'+(wL[1]-11.3).toFixed(1)+'"'
+     + ' stroke="'+gold+'" stroke-width="1.3" stroke-dasharray="5 4" opacity=".9"/>';
+
+  /* золотые точки на пересечениях ромба и квадрата */
+  [[361,153],[447,239],[447,361],[361,447],[239,447],[153,361],[153,239],[239,153]].forEach(function(q){
+    s += '<circle cx="'+q[0]+'" cy="'+q[1]+'" r="2.7" fill="url(#mxdGold)" opacity=".9"/>';
+  });
+  /* искры внутри поля */
+  [[300,196,.42],[196,300,.36],[404,300,.36],[300,404,.3]].forEach(function(q){
+    s += '<path transform="translate('+(q[0]-6)+','+(q[1]-6)+') scale(.5)" fill="'+gold+'" opacity="'+q[2]
+       + '" d="M12 0c.7 6.4 4.9 10.6 12 12-7.1 1.4-11.3 5.6-12 12-.7-6.4-4.9-10.6-12-12C7.1 10.6 11.3 6.4 12 0z"/>';
+  });
+
+  /* В матрице пары названия точек не подписываем — только цифры. */
+  var letters = isPair ? [] : [
+    {p:'A', t:'А', age:0},  {p:'E', t:'Е', age:10}, {p:'B', t:'Б', age:20}, {p:'J', t:'Ж', age:30},
+    {p:'V', t:'В', age:40}, {p:'I', t:'И', age:50}, {p:'G', t:'Г', age:60}, {p:'Z', t:'З', age:70}
+  ];
+  letters.forEach(function(L){
+    var node = PT[L.p];
+    var dx = node[0]-CX, dy = node[1]-CY;
+    var len = Math.sqrt(dx*dx+dy*dy);
+    /* 256 — внешний край крупных кругов 242, внутренний край кольца соляра 268 */
+    var r = 256;
+    var x = CX + dx/len*r, y = CY + dy/len*r;
+    var anchor = dx > 40 ? 'start' : (dx < -40 ? 'end' : 'middle');
+    s += '<text x="'+x.toFixed(1)+'" y="'+(y+5).toFixed(1)+'" text-anchor="middle"'
+       + ' font-family="Montserrat,sans-serif" font-size="14.5" font-weight="600" letter-spacing=".4"'
+       + ' fill="#5E1A1E" style="paint-order:stroke;stroke:#F6F0E5;stroke-width:4.5px;stroke-linejoin:round">'+L.t+'</text>';
+
+  });
+  s += '<text x="300" y="336" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="12" font-weight="600" fill="#5E1A1E" style="paint-order:stroke;stroke:#FBF6EE;stroke-width:5px;stroke-linejoin:round">Д</text>';
+
+  /* прогностика — только внутри SVG.
+     Внутреннее кольцо: арканы бусинами. Внешнее: годы, развёрнутые по радиусу —
+     каждая подпись читается вдоль своего луча и не может наехать на соседнюю. */
+  if(showPrognosis){
+    var periods = calculatePrognosis(M);
+    s += '<g class="mx-ring-g">';
+
+    /* Шаг между бусинами на радиусе 290 равен 28,5 единицы,
+       поэтому радиусы подобраны так, чтобы соседние бусины не соприкасались. */
+    periods.forEach(function(p){
+      var aBead = ang(p.from);
+      var v = pol(290, aBead);
+      var r, fill, stroke, fg, fs;
+
+      /* Засечка и возраст стоят на том же луче, что и бусина, поэтому каждый
+         возраст оказывается ровно напротив своей энергии. Чем мельче бусина,
+         тем короче и бледнее засечка. */
+      var gFrom, gTo, gCol, gW, gOp, gFs, gFw, gFill;
+      if(p.isMain){      gFrom=307; gTo=334; gCol=gold;  gW=1.5; gOp='.9';  gFs=11;  gFw='700'; gFill='#5E1A1E'; }
+      else if(p.isHalf){ gFrom=305; gTo=330; gCol=gold;  gW=1.0; gOp='.7';  gFs=10;  gFw='600'; gFill='#A8823C'; }
+      else {             gFrom=303; gTo=323; gCol=light; gW=.5;  gOp='.32'; gFs=8.6; gFw='400'; gFill='#A2947F'; }
+      var g1 = pol(gFrom, aBead), g2 = pol(gTo, aBead);
+      s += '<line x1="'+g1[0].toFixed(1)+'" y1="'+g1[1].toFixed(1)+'" x2="'+g2[0].toFixed(1)+'" y2="'+g2[1].toFixed(1)
+         + '" stroke="'+gCol+'" stroke-width="'+gW+'" opacity="'+gOp+'"/>';
+
+      var flipY = Math.cos(aBead*Math.PI/180) < 0;
+      var rotY = (flipY ? -aBead + 180 : -aBead).toFixed(2);
+      var ly = pol(340, aBead);
+      s += '<text x="'+ly[0].toFixed(1)+'" y="'+ly[1].toFixed(1)+'" text-anchor="'+(flipY?'end':'start')+'"'
+         + ' dominant-baseline="middle" transform="rotate('+rotY+' '+ly[0].toFixed(1)+' '+ly[1].toFixed(1)+')"'
+         + ' font-family="Montserrat,sans-serif" font-size="'+gFs+'" font-weight="'+gFw+'"'
+         + ' letter-spacing=".2" fill="'+gFill+'">'+ringLabel(p.from)+'</text>';
+
+      if(p.isMain){        r=16;   fill='#5A1A1E'; stroke='#C6A15B'; fg='#F3E3C6'; fs=17; }
+      else if(p.isHalf){   r=13.5; fill='#E5D5B4'; stroke='#C0A473'; fg='#4A3A2C'; fs=15; }
+      else {               r=11.5; fill='#FFFDF8'; stroke=light;     fg='#3A2A22'; fs=13.5; }
+
+      s += '<circle cx="'+v[0].toFixed(1)+'" cy="'+v[1].toFixed(1)+'" r="'+r+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width=".9"/>';
+      s += '<text x="'+v[0].toFixed(1)+'" y="'+(v[1]+fs*0.35).toFixed(1)+'" text-anchor="middle"'
+         + ' font-family="Playfair Display,serif" font-size="'+fs+'" font-weight="600" fill="'+fg+'">'+p.value+'</text>';
+    });
+    s += '</g>';
+  }
+  var box = showPrognosis ? '-100 -100 800 800' : '-60 -60 720 720';
+  return '<svg viewBox="'+box+'" xmlns="http://www.w3.org/2000/svg">' + s + '</svg>';
+}
+
+/* ---- узлы поверх SVG, позиции в процентах ---- */
+function node(cls, coord, val){
+  /* Задержка растёт с удалением от центра: круги проявляются волной наружу.
+     208 — радиус крупных точек, дальше них узлов нет. */
+  var d = Math.sqrt(Math.pow(coord[0]-300,2) + Math.pow(coord[1]-300,2));
+  var delay = (0.30 + Math.min(d,208)/208 * 0.34).toFixed(3);
+  return '<div class="mx-node '+cls+'" style="left:'+pc(coord[0])+';top:'+pc(coord[1])
+       + ';--mx-d:'+delay+'s">'+val+'</div>';
+}
+
+function plane(M, isPair){
+  var h = '';
+  var A=PT.A,B=PT.B,V=PT.V,G=PT.G,D=PT.D,E=PT.E,J=PT.J,I=PT.I,Z=PT.Z;
+
+  /* внутренние точки осей */
+  /* Круги убывают от А, Б, В, Г к центру: 4.6 -> 3.9 -> 3.0 cqw.
+     Доли посчитаны от их радиусов так, чтобы между любой парой соседей
+     оставался одинаковый зазор ~13 единиц, включая зазор до центра и до
+     крупного круга. Поэтому Анахата ни к чему не прилипает.            */
+  /* Анахата стоит ровно посередине между центром и соседней энергией:
+     зазор с обеих сторон одинаковый, 19.7 единицы. */
+  var a2=lerp(A,D,.2856), a1=lerp(A,D,.4663), a3=lerp(A,D,.6717);
+  var b2=lerp(B,D,.2856), b1=lerp(B,D,.4663), b3=lerp(B,D,.6717);
+  var tW = WELL_T(), tW2 = WELL_T2();
+  var d2=lerp(G,D,tW2), d1=lerp(G,D,tW);
+  var c2=lerp(V,D,tW2), c1=lerp(V,D,tW);
+
+  /* линия благополучия */
+  var xP  = lerp(d1,c1,.5);
+  var x1P = lerp(d1,xP,.5);
+  var x2P = lerp(xP,c1,.5);
+
+  h += node('mx-n-i', a2, M.a2) + node('mx-n-i2', a1, M.a1);
+  h += node('mx-n-i', b2, M.b2) + node('mx-n-i2', b1, M.b1);
+  /* точки Анахаты и родовые цепочки есть только в личной матрице */
+  if(!isPair) h += node('mx-n-g', a3, M.a3) + node('mx-n-g', b3, M.b3);
+  h += node('mx-n-i', d2, M.d2) + node('mx-n-i2', d1, M.d1);
+  h += node('mx-n-i', c2, M.c2) + node('mx-n-i2', c1, M.c1);
+
+  h += node('mx-n-m', xP, M.x) + node('mx-n-w', x1P, M.x1) + node('mx-n-w', x2P, M.x2);
+
+  /* родовые цепочки в углах */
+  if(!isPair) [['E','f'],['J','g'],['I','y'],['Z','k']].forEach(function(pair){
+    var corner = PT[pair[0]];
+    h += node('mx-n-r',  lerp(corner,D,.2648), M[pair[1]+'_s2']);
+    h += node('mx-n-r2', lerp(corner,D,.4283), M[pair[1]+'_s1']);
+  });
+
+  /* углы и главные точки */
+  h += node('mx-n-k', E, M.f) + node('mx-n-k', J, M.g) + node('mx-n-k', I, M.y) + node('mx-n-k', Z, M.k);
+  h += node('mx-n-o', A, M.a) + node('mx-n-o', B, M.b) + node('mx-n-o', V, M.c) + node('mx-n-o', G, M.d);
+  h += node('mx-n-c', D, M.e);
+
+  /* значки денег и сердца на линии благополучия + М/Ж у нижних углов */
+  /* буквы точек по гайду: К = Г+Д, Л = Д+В, М = К+Л, Н = К+М, О = М+Л */
+  function ltr(x, y, t){
+    return '<div class="mx-ltr" style="left:'+pc(x)+';top:'+pc(y)+'">'+t+'</div>';
+  }
+  /* м, н, о подписываются по нормали к линии благополучия — тогда буквы
+     не наезжают ни друг на друга, ни на соседние круги */
+  /* Буквы уводим от своих бусин на 26 единиц: к — влево, л — вверх,
+     а м, н, о — внутрь, к центру, где нет соседних кругов. */
+  /* Буква стоит строго под своей энергией, значок — строго над ней.
+     У к и л оси заняты соседями, поэтому они уходят по диагонали наружу. */
+  if(!isPair){
+  h += ltr(d1[0],     d1[1]-24,  'к');   /* над своим кругом, по оси */
+  h += ltr(c1[0]-24,  c1[1],     'л');   /* слева вплотную к своему кругу */
+  h += ltr(xP[0],     xP[1]+24,  'м');   /* прямо под своим кругом */
+  h += ltr(x1P[0]+17, x1P[1]+17, 'н');   /* на одной диагонали с сердцем */
+  h += ltr(x2P[0]+17, x2P[1]+17, 'о');   /* на одной диагонали с долларом */
+  }
+
+  /* значок висит над своей точкой и смещён от ближайшего соседа */
+  /* Значок стоит вплотную к своей точке, но не заходит на неё: смещение 17
+     по каждой оси даёт 24 единицы до центра круга при его радиусе 13.
+     Уходят внутрь, в пустой треугольник между центром и линией благополучия. */
+  /* В личной матрице значки уходят внутрь: снаружи стоят родовые точки.
+     В паре родовых нет, поэтому снаружи просторнее — выносим туда,
+     и центр остаётся чистым. */
+  /* -17 в личной: значок и буква встают симметрично по обе стороны
+     своего круга на одной диагонали */
+  var gOff = isPair ? 16 : -17;
+  var gCls = 'mx-glyph' + (isPair ? '' : ' mx-glyph-sm');
+  h += '<div class="'+gCls+'" style="left:'+pc(x2P[0]+gOff)+';top:'+pc(x2P[1]+gOff)+';color:#7E8C3E">&#36;</div>';
+  h += '<div class="'+gCls+'" style="left:'+pc(x1P[0]+gOff)+';top:'+pc(x1P[1]+gOff)+'">&#9829;</div>';
+
+  return '<div class="mx-plane">'+h+'</div>';
+}
+
+function renderMatrix(el, M, showPrognosis, isPair, animate){
+  el.className = 'mx-matrix' + (showPrognosis ? ' is-prog' : '') + (animate ? ' is-anim' : '');
+  el.innerHTML = svgFrame(M, showPrognosis, isPair) + plane(M, isPair);
+}
+
+/* ============ 4. Справочники ============ */
+var WEEKDAYS=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+
+/* Тексты живут в отдельном файле mx-texts.js и подключаются раньше ядра.
+   Так их можно править, не трогая расчёт, и каждый блок влезает в лимит Tilda. */
+var ARCANA = window.MX_ARCANA || {};
+var ARCANA_DRAFT = !!window.MX_ARCANA_DRAFT;
+function arcana(num){ return ARCANA[num] || {n:'Аркан ' + num, s:'', a:'', p:''}; }
+
+/* Какое предназначение работает у человека прямо сейчас.
+   По вашей методичке предназначение включается в 20 лет: до этого
+   показываем ближайшее, личное, и помечаем, что оно ещё впереди. */
+function activePurpose(M, years){
+  if(years < 40) return { level:'Личное',     span:'20–40 лет',        value:M.m, soon:(years < 20) };
+  if(years < 60) return { level:'Социальное', span:'40–60 лет',        value:M.z, soon:false };
+  return           { level:'Духовное',   span:'60 лет и дальше', value:M.s, soon:false };
+}
+
+function pad(n){ return (n<10?'0':'')+n; }
+
+var CHAKRAS = [
+  {n:'7. Сахасрара',   c:'#8E7099', f:'#FFFFFF'},
+  {n:'6. Аджна',       c:'#6B7FB0', f:'#FFFFFF'},
+  {n:'5. Вишудха',     c:'#77A6BC', f:'#FFFFFF'},
+  {n:'4. Анахата',     c:'#7FAA86', f:'#FFFFFF'},
+  {n:'3. Манипура',    c:'#DDC475', f:'#3A2A22'},
+  {n:'2. Свадхистана', c:'#D6976A', f:'#FFFFFF'},
+  {n:'1. Муладхара',   c:'#BE7168', f:'#FFFFFF'}
+];
+
+/* Энергии одного года жизни. По вашему файлу ЭНЕРГИИ ПО ГОДАМ:
+   первая энергия соответствует числу полных лет, вторая стоит строго
+   напротив, то есть плюс или минус сорок лет, третья это их сумма. */
+function yearRow(M, years){
+  /* Круг прогностики идёт от 0 до 80 и после этого повторяется:
+     80 это снова 0, 90 это 10. Поэтому берём остаток, а не обрезаем. */
+  var y = ((Math.floor(years) % 80) + 80) % 80;
+  var row = yearByYear(M)[y];
+  return { year:years, ring:y, label:row.label, e1:row.e1, e2:row.e2, e3:row.e3,
+           repeat:(years >= 80) };
+}
+
+/* Энергии по годам. Периодов 64, а целых лет 80, поэтому один к одному они
+   не ложатся: два периода в каждом десятилетии идут по два года. Здесь мы
+   разворачиваем расчёт на все 80 лет — каждый год получает аркан того
+   периода, внутри которого лежит его середина. Формулы при этом не
+   меняются, меняется только подача. Поле shared показывает, что энергия
+   та же, что и в предыдущем году. */
+function yearByYear(M){
+  var p = calculatePrognosis(M), out = [], prev = -1;
+  for(var n = 0; n < 80; n++){
+    var i = Math.floor((n + 0.5) / 1.25);
+    var e1 = p[i].value, e2 = p[(i + 32) % 64].value;
+    out.push({ year: n, label: n + '-' + (n + 1),
+               e1: e1, e2: e2, e3: reduce(e1 + e2),
+               isDecade: (n % 10 === 0), shared: (i === prev), periodIndex: i });
+    prev = i;
+  }
+  return out;
+}
+
+/* ============ 5. Готовые наборы данных для интерфейса ============ */
+
+/* Карта здоровья, раздел 2.4. Возвращает семь строк и итог,
+   рисует их уже интерфейс. */
+function healthRows(M){
+  var src = [
+    [M.a,  M.b ], [M.a2, M.b2], [M.a1, M.b1], [M.a3, M.b3],
+    [M.e,  M.e ], [M.c1, M.d1], [M.c,  M.d ]
+  ];
+  var sum = [0,0,0], rows = [];
+  src.forEach(function(r, i){
+    var third = reduce(r[0] + r[1]);
+    sum[0] += r[0]; sum[1] += r[1]; sum[2] += third;
+    rows.push({ name: CHAKRAS[i].n, color: CHAKRAS[i].c, fg: CHAKRAS[i].f,
+                phys: r[0], energy: r[1], emo: third });
+  });
+  return { rows: rows,
+           total: { phys: reduce(sum[0]), energy: reduce(sum[1]), emo: reduce(sum[2]) } };
+}
+
+/* Энергии года, раздел 2.6. Энергия 2 — точка напротив, то есть +40 лет. */
+function yearsRows(M){
+  var p = calculatePrognosis(M);
+  return p.map(function(period, i){
+    var e1 = period.value, e2 = p[(i + 32) % 64].value;
+    return { years: yearsOfPeriod(period.from),   /* как на кольце: целые года */
+             exact: periodRange(period),             /* точные границы, если понадобятся */
+             e1: e1, e2: e2, e3: reduce(e1 + e2),
+             isMain: period.isMain, from: period.from, to: period.to };
+  });
+}
+
+/* ============ 6. Самопроверка по контрольной дате ============ */
+(function selfTest(){
+  var ok = true, log = [];
+  function eq(name, got, exp){ if(got !== exp){ ok=false; log.push(name+': получено '+got+', ожидалось '+exp); } }
+
+  eq('reduce(17)', reduce(17), 17);
+  eq('reduce(23)', reduce(23), 5);
+  eq('reduce(29)', reduce(29), 11);
+  eq('reduce(31)', reduce(31), 4);
+
+  var T = calculateMatrix(17, 1, 1989);
+  eq('a', T.a, 17); eq('b', T.b, 1); eq('c', T.c, 9); eq('d', T.d, 9);
+  eq('e', T.e, 9);  eq('f', T.f, 18); eq('g', T.g, 10); eq('y', T.y, 18); eq('k', T.k, 8);
+
+  var P = calculatePrognosis(T);
+  var slot = P.filter(function(p){ return Math.abs(p.from - 36.25) < 0.001; })[0];
+  eq('период 36,25-37,5', slot ? slot.value : null, 11);
+  eq('подпись периода', slot ? periodLabel(slot,'years') : null, '36-37');
+  eq('число рождения', reduce(17), 17);
+
+  /* вторая сверка — по образцу beloesolnce, 07.04.1991 */
+  var R = extend(calculateMatrix(7, 4, 1991));
+  eq('bs: a', R.a, 7); eq('bs: b', R.b, 4); eq('bs: c', R.c, 20); eq('bs: d', R.d, 4); eq('bs: e', R.e, 8);
+  eq('bs: f', R.f, 11); eq('bs: g', R.g, 6); eq('bs: y', R.y, 6); eq('bs: k', R.k, 11);
+  eq('bs: a1', R.a1, 15); eq('bs: a2', R.a2, 22); eq('bs: a3', R.a3, 5);
+  eq('bs: b1', R.b1, 12); eq('bs: b2', R.b2, 16); eq('bs: b3', R.b3, 20);
+  eq('bs: c1', R.c1, 10); eq('bs: c2', R.c2, 3);
+  eq('bs: d1', R.d1, 12); eq('bs: d2', R.d2, 16);
+  eq('bs: линия благополучия', R.x + '/' + R.x1 + '/' + R.x2, '22/7/5');
+  eq('bs: сила рода', R.e1, 7);
+  eq('bs: внутренняя сила', R.inner, 15);
+  eq('bs: небо/земля/личное', R.h+'/'+R.j+'/'+R.m, '8/9/17');
+  eq('bs: М/Ж/социальное', R.n+'/'+R.t+'/'+R.z, '17/17/7');
+  eq('bs: духовное', R.s, 6);
+  /* контроль из гайда: духовное предназначение кратно 3 */
+  if([3,6,9,12,15,18,21].indexOf(R.s) === -1){ ok=false; log.push('духовное предназначение вне ряда 3,6,9…21: '+R.s); }
+  eq('bs: планетарное', R.planet, 13);
+  eq('bs: родовые Е', R.f_s2 + '/' + R.f_s1, '3/19');
+  eq('bs: родовые Ж', R.g_s2 + '/' + R.g_s1, '20/14');
+
+  var RP = calculatePrognosis(R);
+  function at(a){ return RP.filter(function(p){ return Math.abs(p.from-a)<0.001; })[0]; }
+  eq('bs: 21,25', at(21.25).value, 18);
+  eq('bs: подпись 21,25', periodLabel(at(21.25),'years'), '21-22');
+  eq('bs: 22,5', at(22.5).value, 14);
+  eq('bs: подпись 22,5', periodLabel(at(22.5),'years'), '22-23');
+  eq('bs: 25 лет', at(25).value, 10);
+  eq('bs: 26,25', at(26.25).value, 8);
+  eq('bs: подпись 26,25', periodLabel(at(26.25),'years'), '26-27');
+  eq('bs: 27,5', at(27.5).value, 16);
+  eq('bs: 5 лет', at(5).value, 18);
+  /* подписи периодов: всегда ровно один год, в том числе на стыке с пятилеткой */
+  eq('bs: подпись 3,75',  periodLabel(at(3.75),'years'),  '3-4');
+  eq('bs: подпись 8,75',  periodLabel(at(8.75),'years'),  '8-9');
+  eq('bs: подпись 13,75', periodLabel(at(13.75),'years'), '13-14');
+  eq('bs: подпись 23,75', periodLabel(at(23.75),'years'), '23-24');
+  eq('bs: подпись 28,75', periodLabel(at(28.75),'years'), '28-29');
+  var mxBad = RP.filter(function(q){
+    var mm = /^(\d+)-(\d+)$/.exec(periodLabel(q,'years'));
+    return mm && (+mm[2] - +mm[1]) !== 1;
+  });
+  eq('bs: диапазонов длиннее года', mxBad.length, 0);
+
+  /* режим 'exact': шкала без пропусков, конец периода совпадает с началом следующего */
+  eq('bs: метка 0',    periodLabel(at(0),'exact'),    '0 лет');
+  eq('bs: метка 1,25', periodLabel(at(1.25),'exact'), '1г 3м');
+  eq('bs: метка 2,5',  periodLabel(at(2.5),'exact'),  '2г 6м');
+  eq('bs: метка 3,75', periodLabel(at(3.75),'exact'), '3г 9м');
+  eq('bs: метка 5',    periodLabel(at(5),'exact'),    '5 лет');
+  eq('bs: метка 8,75', periodLabel(at(8.75),'exact'), '8г 9м');
+  eq('bs: метка 20',   periodLabel(at(20),'exact'),   '20 лет');
+  var mxGap = 0;
+  for(var gi = 0; gi < RP.length - 1; gi++){
+    if(fmtAge(RP[gi].to) !== fmtAge(RP[gi+1].from)) mxGap++;
+  }
+  eq('bs: разрывов в шкале', mxGap, 0);
+
+  if(ok) console.log('%cМатрица: самопроверка пройдена ✓', 'color:#1a7f37;font-weight:bold');
+  else console.warn('Матрица: РАСХОЖДЕНИЯ\n' + log.join('\n'));
+})();
+
+return {
+  version: '1.0',
+
+  /* канон: раздел 2 инструкции */
+  reduce: reduce,
+  calculateMatrix: calculateMatrix,
+  extend: extend,
+  pairMatrix: pairMatrix,
+  calculatePrognosis: calculatePrognosis,
+
+  /* возраст и подписи периодов */
+  ageYM: ageYM,
+  fmtAge: fmtAge,
+  periodLabel: periodLabel,
+  periodRange: periodRange,
+  yearsOfPeriod: yearsOfPeriod,
+  ringLabel: ringLabel,
+
+  /* готовые наборы */
+  healthRows: healthRows,
+  yearsRows: yearsRows,
+  yearByYear: yearByYear,
+  yearRow: yearRow,
+
+  /* справочники */
+  ARCANA: ARCANA,
+  ARCANA_DRAFT: ARCANA_DRAFT,
+  arcana: arcana,
+  activePurpose: activePurpose,
+  CHAKRAS: CHAKRAS,
+  WEEKDAYS: WEEKDAYS,
+
+  /* диаграмма */
+  renderMatrix: renderMatrix,
+  svgFrame: svgFrame,
+  plane: plane,
+
+  /* мелочи, нужные интерфейсу */
+  esc: esc,
+  pad: pad,
+  plural: plural
+};
+
+})();
+</script>
+<!-- ==== РАЗБОР СОВМЕСТИМОСТИ. В Tilda это блок 4 из 4: логика ==== -->
+<script>
+/* ============================================================
+   РАЗБОР СОВМЕСТИМОСТИ · ЛОГИКА
+   Расчёт пары, раскладка по позициям, сборка отчёта, PDF и Word.
+   Ядро расчёта (MX) подключается блоком раньше и не меняется.
+   Тексты приходят отдельным файлом mx-data.js.
+   ============================================================ */
+(function(){
+"use strict";
+
+/* ====== ЕДИНСТВЕННОЕ МЕСТО, КОТОРОЕ НУЖНО ПОМЕНЯТЬ ПРИ УСТАНОВКЕ ======
+   Ссылка на файл mx-data.js, загруженный в «Настройки сайта → Ещё → Файлы». */
+var DATA_URL = "mx-data.js";
+var DOCX_URL = "docx.umd.js";
+var DOCX_URL2 = "https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js";
+
+var MX = window.MX;
+var SOV = window.SOV = {};
+
+/* ============ ДАТЫ ============ */
+function parseDate(str){
+  var m = /^\s*(\d{1,2})[.\-\/ ](\d{1,2})[.\-\/ ](\d{4})\s*$/.exec(String(str || ""));
+  if(!m) return null;
+  var d = +m[1], mo = +m[2], y = +m[3];
+  var dt = new Date(y, mo - 1, d);
+  if(dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return null;
+  if(y < 1900 || y > new Date().getFullYear()) return null;
+  return {d:d, m:mo, y:y};
+}
+function fmtDate(o){ return (o.d < 10 ? "0" : "") + o.d + "." + (o.m < 10 ? "0" : "") + o.m + "." + o.y; }
+
+/* ============ РАСКЛАДКА ПОЗИЦИЙ ============
+   Откуда берётся каждая позиция в матрице пары (сверено со схемой урока):
+   А, Б, В, Г, Д и углы Е, Ж, И, З складываются из личных матриц,
+   всё внутри считается теми же формулами, что и в личной.            */
+function layout(P, swap){
+  var lead = swap ? [P.g, P.k] : [P.f, P.y];
+  var follow = swap ? [P.f, P.y] : [P.g, P.k];
+  return {
+    A:[P.a], uzn:[P.a1], prin:[P.a2],
+    B:[P.b], govor:[P.b1], nevysk:[P.b2], D:[P.e],
+    money:[P.x2, P.x, P.c1],      /* ключевая первая: под долларом */
+    love:[P.x1, P.d1, P.x],       /* ключевая первая: под сердечком */
+    kids:[P.a, P.a2, P.a1],
+    man:lead, woman:follow,
+    matk:[P.c, P.c2, P.c1],
+    pastk:[P.d, P.d2, P.d1],
+    p1:[P.m], p2:[P.z], unity:[P.s]
+  };
+}
+
+var TYPES = {
+  pair:  { name:"Любовная пара, партнёры",
+           man:{eb:"Мужская линия", t:"Задачи мужчины в паре"},
+           woman:{eb:"Женская линия", t:"Задачи женщины в паре"}, lines:false, swap:true },
+  work:  { name:"Деловые партнёры, друзья, коллеги, родные",
+           man:{eb:"Ведущая линия", t:"Задачи ведущего партнёра"},
+           woman:{eb:"Ведомая линия", t:"Задачи ведомого партнёра"}, lines:true, swap:true },
+  child: { name:"Мама и ребёнок",
+           man:{eb:"Линия мамы", t:"Задачи мамы в паре"},
+           woman:{eb:"Линия ребёнка", t:"Задачи ребёнка в паре"}, lines:true, swap:false }
+};
+
+var POS_ORDER = [
+  {g:"Материальный блок", d:"Всё, что происходит с момента встречи: внешнее, поведение, первые шаги.",
+   keys:["A","uzn","prin"]},
+  {g:"Духовный блок", d:"Здесь внешность уже не играет первой роли, начинается настоящая близость.",
+   keys:["B","govor","nevysk","D"]},
+  {g:"Каналы пары", d:"Три линии, по которым в вашу пару приходят деньги, близость и то, что вы передаёте детям.",
+   keys:["money","love","kids"]},
+  {g:"Роли в паре", d:"Что каждая из сторон получает и к чему стремится в этом союзе.",
+   keys:["man","woman"]},
+  {g:"Карма пары", d:"Уроки, которые приходят именно в этом союзе.",
+   keys:["matk","pastk"]},
+  {g:"Предназначение пары", d:"Куда ведёт ваш союз, если пройти его честно.",
+   keys:["p1","p2","unity"]}
+];
+
+function posMeta(key, type){
+  var T = TYPES[type];
+  return {
+    A:    {eb:"Точка А", t:"Знакомство, встреча"},
+    uzn:  {eb:"Позиция", t:"Узнавание"},
+    prin: {eb:"Позиция", t:"Принятие решения, поступок"},
+    B:    {eb:"Точка Б", t:"Выяснение отношений"},
+    govor:{eb:"Позиция", t:"О чём пара говорит"},
+    nevysk:{eb:"Позиция", t:"Невысказанные мысли"},
+    D:    {eb:"Точка Д", t:"Зона комфорта пары"},
+    money:{eb:"Канал денег", t:"Сфера общей деятельности"},
+    love: {eb:"Канал отношений", t:"Задачи интимной сферы"},
+    kids: {eb:"Детско-родительский канал", t:"Родительские задачи пары"},
+    man:  T.man, woman:T.woman,
+    matk: {eb:"Позиции", t:"Материальная карма"},
+    pastk:{eb:"Позиции", t:"Карма прошлой жизни"},
+    p1:   {eb:"Позиция", t:"Первое предназначение пары"},
+    p2:   {eb:"Позиция", t:"Второе предназначение пары"},
+    unity:{eb:"Позиция", t:"Единство"}
+  }[key];
+}
+
+/* Позиции для таблицы «ваша пара в цифрах» */
+var ROW_LABELS = {
+  A:"Точка А, знакомство", uzn:"Узнавание", prin:"Принятие решения",
+  B:"Точка Б, выяснение отношений", govor:"О чём пара говорит", nevysk:"Невысказанные мысли",
+  D:"Точка Д, зона комфорта", money:"Канал денег", love:"Канал отношений",
+  kids:"Детско-родительский канал", matk:"Материальная карма", pastk:"Карма прошлой жизни",
+  p1:"Первое предназначение", p2:"Второе предназначение", unity:"Единство"
+};
+
+/* ============ ТЕКСТЫ, КОТОРЫЕ ПИШЕТ САМА СТРАНИЦА ============ */
+var TXT = {
+  hello:"Здравствуйте. Ниже разбор вашей пары. Позиции идут от начала отношений к тому, чем они могут стать, поэтому читать их лучше по порядку, не перескакивая.",
+  scen:"В каждой позиции есть два сценария, позитивный и негативный. Это не предсказание и не приговор, а две стороны одной энергии. В них пара может узнать свой вариант.",
+  seven:[
+    {to:7,  t:"Семерица материи", x:"Материальный союз. Оба заинтересованы в продолжении рода. Связывает земная любовь, страсть, общие задачи по семье. Крепкий и прочный союз, вместе растут материально."},
+    {to:14, t:"Семерица души", x:"Творческий союз. Общие интересы, ценности, идеи, увлечения. Оба заинтересованы в совместных проектах или друг в друге как в опоре для самореализации. Родственная любовь на уровне душ."},
+    {to:22, t:"Семерица духа", x:"Союз на уровне духа. Глубинная связь на энергетическом и эмоциональном уровне, души близнецы. Связывают духовные задачи и эволюция сознания через друг друга."}
+  ],
+  sevenLead:"Эту энергию получила точка А, то есть момент встречи. Она показывает, к какому слою относится ваш союз.",
+  codeMiss:"Для вашего сочетания нет отдельной трактовки кода. Ниже в разборе по позициям то же самое раскрыто подробнее. А вот что стоит за каждой энергией этого сочетания:",
+  unityMiss:"Позиция единства открывается не у каждой пары: она читается только у восьми энергий. В вашей паре она не раскрыта. Это нормально, она встречается редко.",
+  progT:"Что заложено в подсознании пары",
+  recsT:"Рекомендации для гармонизации отношений",
+  recsLead:"Для каждой энергии, которая есть в вашей паре, собраны прикладные действия: что делать, как часто и с чего начать. Брать всё сразу не нужно. Достаточно выбрать два-три пункта, которые откликаются, и держаться их от трёх недель до трёх месяцев.",
+  practT:"Практики для вашей пары",
+  practLead:"Делать всё сразу не нужно. Достаточно взять по одной практике из каждого раздела: мелочь на каждый день, дело на неделю и один разговор. Срок, за который появляются изменения, – от трёх недель до трёх месяцев. Практики из раздела Самому можно делать в одиночку, партнёру знать о них не нужно.",
+  nextT:"Что делать дальше",
+  next:[
+    "Из этого разбора достаточно взять три вещи, не больше.",
+    "Первое: одна рекомендация по энергии точки Б, потому что она про смысл союза и тянет за собой остальное.",
+    "Второе: одно действие по энергии точки Д, самое простое, которое можно сделать на этой неделе.",
+    "Третье: один разговор, который давно откладывался.",
+    "На это нужно от трёх недель до трёх месяцев. Отношения меняются медленнее, чем хочется, и быстрее, чем кажется, когда начинаешь делать что-то конкретное."
+  ],
+  foot:"Разбор носит психологический и информационный характер. Он не заменяет консультацию специалиста и не является предсказанием.",
+  swapNote:"В вашей паре роли поменялись местами, поэтому линии прочитаны наоборот.",
+  twice:"Эта энергия стоит в канале дважды."
+};
+
+/* ============ МОДЕЛЬ ОТЧЁТА ============ */
+function enName(D, n){ return "Энергия " + n + " · " + (D.names[n] || ""); }
+
+function buildModel(D, inp){
+  var type = TYPES[inp.type] ? inp.type : "pair";
+  var swap = !!inp.swap && TYPES[type].swap;
+  var M1 = MX.calculateMatrix(inp.a.d, inp.a.m, inp.a.y);
+  var M2 = MX.calculateMatrix(inp.b.d, inp.b.m, inp.b.y);
+  var P = MX.pairMatrix(M1, M2);
+  var L = layout(P, swap);
+
+  var sections = [];
+  POS_ORDER.forEach(function(grp){
+    var secs = [];
+    grp.keys.forEach(function(key){
+      var meta = posMeta(key, type);
+      var list = L[key], items = [], seen = {};
+      list.forEach(function(en, i){
+        if(seen[en]){ items[seen[en] - 1].note = TXT.twice; return; }
+        var nodes = D.E[en] && D.E[en][key];
+        if(!nodes){ return; }
+        seen[en] = items.length + 1;
+        var it = {en:en, label:enName(D, en), nodes:nodes};
+        if((key === "money" || key === "love") && i === 0) it.tag = "Ключевая энергия";
+        if(swap && (key === "man" || key === "woman")) it.note = TXT.swapNote;
+        items.push(it);
+      });
+      if(key === "unity" && !items.length){
+        secs.push({key:key, eb:meta.eb, t:meta.t, text:TXT.unityMiss, items:[]});
+        return;
+      }
+      if(!items.length) return;
+      secs.push({key:key, eb:meta.eb, t:meta.t, items:items});
+    });
+    if(secs.length) sections.push({g:grp.g, d:grp.d, secs:secs});
+  });
+
+  /* троичный код: линия, линия, их сумма (второе предназначение) */
+  var n1 = swap ? P.t : P.n, n2 = swap ? P.n : P.t;
+  var codeKey = n1 + "-" + n2 + "-" + P.z;
+  var code = {key:codeKey, found:!!D.C[codeKey]};
+  if(code.found) code.nodes = D.C[codeKey];
+
+  /* подсознательные программы: тройки на каналах, в кармах и в коде */
+  var progs = [], seenG = {};
+  var GWHERE = {money:"Стоит на канале денег: влияет на финансы пары", love:"Стоит на канале отношений: влияет на близость",
+    kids:"Стоит на детско-родительском канале: влияет на детей и родовые связи", matk:"Стоит в материальной карме: влияет на достаток",
+    pastk:"Стоит в карме прошлой жизни: это повторяющийся урок пары", code:"Стоит в коде пары: это задача, ради которой партнёры встретились"};
+  var byKey = {};
+  (D.G || []).forEach(function(g, gi){ g.k.forEach(function(k){ byKey[k] = gi; }); });
+  [["money", L.money], ["love", L.love], ["kids", L.kids], ["matk", L.matk], ["pastk", L.pastk], ["code", [n1, n2, P.z]]].forEach(function(pl){
+    var v = pl[1], fw = v.join("-");
+    [fw].forEach(function(key){
+      if(byKey[key] === undefined) return;
+      var gi = byKey[key];
+      if(!seenG[gi]){ seenG[gi] = {g:D.G[gi], v:v.slice(), where:[]}; progs.push(seenG[gi]); }
+      var w = GWHERE[pl[0]];
+      if(seenG[gi].where.indexOf(w) < 0) seenG[gi].where.push(w);
+    });
+  });
+
+  var rows = [];
+  ["A","uzn","prin","B","govor","nevysk","D","money","love","kids","man","woman","matk","pastk","p1","p2","unity"].forEach(function(k){
+    var label = (k === "man" || k === "woman") ? TYPES[type][k].eb : ROW_LABELS[k];
+    var v = [];
+    L[k].forEach(function(x){ if(v.indexOf(x) < 0) v.push(x); });
+    rows.push({k:k, label:label, v:v});
+  });
+
+  /* рекомендации: по каждой энергии пары, один раз, в порядке появления */
+  var recs = [], seenR = {};
+  sections.forEach(function(grp){ grp.secs.forEach(function(sec){ sec.items.forEach(function(it){
+    var r = D.E[it.en] && D.E[it.en].recs;
+    if(seenR[it.en] || !r) return;
+    seenR[it.en] = true;
+    recs.push({en:it.en, label:it.label, nodes:r.filter(function(n){ return n[0] !== "sub"; })});
+  }); }); });
+
+  /* практики: по энергии точки Д и точки Б */
+  var practices = [];
+  [[P.e, "Зона комфорта пары"], [P.b, "Смысл вашего союза"]].forEach(function(pair){
+    var en = pair[0];
+    if(!D.P[en]) return;
+    for(var i = 0; i < practices.length; i++) if(practices[i].en === en) return;
+    practices.push({en:en, label:enName(D, en), why:pair[1], nodes:D.P[en]});
+  });
+
+  /* семерица и карма */
+  var seven = null;
+  for(var s = 0; s < TXT.seven.length; s++){ if(P.a <= TXT.seven[s].to){ seven = TXT.seven[s]; break; } }
+  var KARMA = [8, 15, 16, 20], hits = [];
+  [["В", P.c], ["Г", P.d], ["Д", P.e]].forEach(function(p){ if(KARMA.indexOf(p[1]) >= 0) hits.push("точка " + p[0] + ": " + p[1]); });
+  [n1, n2, P.z].forEach(function(v, i){ if(KARMA.indexOf(v) >= 0) hits.push("код, число " + (i + 1) + ": " + v); });
+
+  return {
+    type:type, swap:swap, M1:M1, M2:M2, P:P, L:L,
+    names:[inp.a.name || "", inp.b.name || ""],
+    dates:[fmtDate(inp.a), fmtDate(inp.b)],
+    sections:sections, progs:progs, code:code, codeNums:[n1, n2, P.z], rows:rows,
+    recs:recs, practices:practices, seven:seven, karma:hits
+  };
+}
+
+/* ============ ВЫВОД В HTML ============ */
+function esc(s){ return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+function inl(s){ return esc(s).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+)\*/g, "<em>$1</em>"); }
+
+function nodesHtml(nodes, opt){
+  var h = "";
+  nodes.forEach(function(n){
+    var t = n[0], v = n[1];
+    if(t === "sub")      h += '<div class="sov-sub">' + inl(v) + "</div>";
+    else if(t === "h3")  h += '<h4 class="sov-h3 ' + (/^Негатив/.test(v) ? "neg" : /^Позитив/.test(v) ? "pos" : "") + '">' + inl(v) + "</h4>";
+    else if(t === "p")   h += "<p>" + inl(v) + "</p>";
+    else if(t === "ol" || t === "ul"){
+      h += "<" + t + ' class="sov-list">' + v.map(function(x){ return "<li>" + inl(x) + "</li>"; }).join("") + "</" + t + ">";
+    }
+    else if(t === "line" && opt && opt.lines) h += '<div class="sov-note">' + inl(v) + "</div>";
+  });
+  return h;
+}
+
+function disc(n){ return '<span class="sov-disc"><span>' + n + "</span></span>"; }
+
+function itemHtml(it, opt){
+  var h = '<article class="sov-item"><div class="sov-ihead">' + disc(it.en) + '<div class="sov-iname">' + esc(it.label)
+        + (it.tag ? '<span class="sov-tag">' + esc(it.tag) + "</span>" : "") + "</div></div>";
+  if(it.note) h += '<div class="sov-note">' + esc(it.note) + "</div>";
+  return h + nodesHtml(it.nodes, opt) + "</article>";
+}
+
+function reportHtml(R, forPrint){
+  var opt = {lines:TYPES[R.type].lines};
+  var who = (R.names[0] && R.names[1]) ? esc(R.names[0]) + " и " + esc(R.names[1]) : "Ваша пара";
+  var h = "";
+
+  /* шапка */
+  h += '<header class="sov-cover">'
+     + '<div class="sov-eyebrow"><i></i>Матрица совместимости<i></i></div>'
+     + "<h1>Разбор совместимости</h1>"
+     + '<div class="sov-who">' + who + "</div>"
+     + '<div class="sov-dates">' + esc(R.dates[0]) + "  ✦  " + esc(R.dates[1]) + "</div>"
+     + '<div class="sov-type">' + esc(TYPES[R.type].name) + "</div></header>";
+
+  h += '<section class="sov-intro"><p>' + esc(TXT.hello) + "</p><p>" + esc(TXT.scen) + "</p></section>";
+
+  /* диаграмма и цифры */
+  h += '<section class="sov-sec"><div class="sov-eyebrow"><i></i>Ваша пара в цифрах<i></i></div>'
+     + '<h2>Матрица совместимости</h2><div class="sov-rule"></div>'
+     + '<div class="mx-matrix-outer"><div class="sov-diagram" id="sov-diagram-slot"></div></div>'
+     + '<div class="sov-rows">' + R.rows.map(function(r){
+         var vals = r.v.length > 1 ? r.v.join(" · ") : String(r.v[0]);
+         return '<div class="sov-row"><span>' + esc(r.label) + "</span><b>" + vals + "</b></div>";
+       }).join("") + "</div></section>";
+
+  /* с первого взгляда */
+  h += '<section class="sov-sec"><div class="sov-eyebrow"><i></i>С первого взгляда<i></i></div>'
+     + '<h2>' + esc(R.seven.t) + '</h2><div class="sov-rule"></div>'
+     + '<div class="sov-ihead">' + disc(R.P.a) + '<div class="sov-iname">Энергия точки А</div></div>'
+     + "<p>" + esc(R.seven.x) + "</p><p class=\"sov-mute\">" + esc(TXT.sevenLead) + "</p>";
+  h += "</section>";
+
+  /* код */
+  h += '<section class="sov-sec"><div class="sov-eyebrow"><i></i>Для чего вы встретились<i></i></div>'
+     + '<h2>Код ' + esc(R.code.key) + '</h2><div class="sov-rule"></div>';
+  if(R.code.found){
+    h += '<article class="sov-item">' + nodesHtml(R.code.nodes, opt) + "</article>";
+  } else {
+    h += '<p>' + esc(TXT.codeMiss) + "</p><ul class=\"sov-list\">";
+    R.codeNums.forEach(function(n, i){
+      h += "<li><strong>" + n + " · " + esc(SOV.data.names[n] || "") + ".</strong> " + esc(SOV.data.subs[n] || "") + "</li>";
+    });
+    h += "</ul>";
+  }
+  h += "</section>";
+
+  /* позиции */
+  R.sections.forEach(function(grp){
+    h += '<div class="sov-group"><div class="sov-eyebrow"><i></i>' + esc(grp.g) + '<i></i></div><p class="sov-mute">' + esc(grp.d) + "</p></div>";
+    grp.secs.forEach(function(sec){
+      h += '<section class="sov-sec" id="sov-' + sec.key + '"><div class="sov-eyebrow"><i></i>' + esc(sec.eb) + "<i></i></div>"
+         + "<h2>" + esc(sec.t) + '</h2><div class="sov-rule"></div>';
+      if(sec.text) h += "<p>" + esc(sec.text) + "</p>";
+      sec.items.forEach(function(it){ h += itemHtml(it, opt); });
+      h += "</section>";
+    });
+  });
+
+  /* подсознательные программы */
+  if(R.progs.length){
+    h += '<div class="sov-group"><div class="sov-eyebrow"><i></i>Подсознательные программы<i></i></div></div>'
+       + '<section class="sov-sec"><h2>' + esc(TXT.progT) + '</h2><div class="sov-rule"></div>'
+       + (SOV.data.GI || []).map(function(n){ return "<p>" + inl(n[1]) + "</p>"; }).join("");
+    R.progs.forEach(function(pg){
+      h += '<article class="sov-item"><div class="sov-codes">' + pg.v.map(function(n, i){ return (i ? "<em>·</em>" : "") + disc(n); }).join("")
+         + '</div><div class="sov-iname" style="text-align:center">' + esc(pg.g.t) + "</div>"
+         + '<div class="sov-note">' + pg.where.map(esc).join(". ") + "</div>" + nodesHtml(pg.g.n, opt) + "</article>";
+    });
+    h += "</section>";
+  }
+
+  /* рекомендации */
+  if(R.recs.length){
+    h += '<div class="sov-group"><div class="sov-eyebrow"><i></i>Рекомендации<i></i></div></div>'
+       + '<section class="sov-sec"><h2>' + esc(TXT.recsT) + '</h2><div class="sov-rule"></div><p>' + esc(TXT.recsLead) + "</p>";
+    R.recs.forEach(function(rc){
+      h += '<article class="sov-item"><div class="sov-ihead">' + disc(rc.en) + '<div class="sov-iname">' + esc(rc.label)
+         + "</div></div>" + nodesHtml(rc.nodes, opt) + "</article>";
+    });
+    h += "</section>";
+  }
+
+  /* практики */
+  if(R.practices.length){
+    h += '<div class="sov-group"><div class="sov-eyebrow"><i></i>Практики<i></i></div></div>'
+       + '<section class="sov-sec"><h2>' + esc(TXT.practT) + '</h2><div class="sov-rule"></div><p>' + esc(TXT.practLead) + "</p>";
+    R.practices.forEach(function(pr){
+      h += '<article class="sov-item"><div class="sov-ihead">' + disc(pr.en) + '<div class="sov-iname">' + esc(pr.label)
+         + '<span class="sov-tag">' + esc(pr.why) + "</span></div></div>" + nodesHtml(pr.nodes, opt) + "</article>";
+    });
+    h += "</section>";
+  }
+
+  /* финал */
+  h += '<section class="sov-sec sov-end"><h2>' + esc(TXT.nextT) + '</h2><div class="sov-rule"></div>'
+     + TXT.next.map(function(p){ return "<p>" + esc(p) + "</p>"; }).join("")
+     + '<div class="sov-star">✦</div><p class="sov-mute sov-foot">' + esc(TXT.foot) + "</p></section>";
+  return h;
+}
+
+/* ============ ЗАГРУЗКА ДАННЫХ ============ */
+function loadScript(url){
+  return new Promise(function(ok, fail){
+    var s = document.createElement("script");
+    s.src = url; s.async = true;
+    s.onload = ok; s.onerror = function(){ fail(new Error("load " + url)); };
+    document.head.appendChild(s);
+  });
+}
+var dataPromise = null;
+function loadData(){
+  if(window.MXS_DATA){ SOV.data = window.MXS_DATA; return Promise.resolve(SOV.data); }
+  if(!dataPromise) dataPromise = loadScript(DATA_URL).then(function(){ SOV.data = window.MXS_DATA; return SOV.data; });
+  return dataPromise;
+}
+
+/* ============ ЦВЕТОВЫЕ ГАММЫ ============ */
+var PALS = {
+  vino:{main:"5E1A1E", acc:"A8823C", line:"C6A15B", ink:"3A2A22", mute:"7C6B5C", rule:"DCCBAA", card:"FCF8F1", link:"5E1A1E", page:""},
+  lilac:{main:"5E3A8C", acc:"A8823C", line:"C6A15B", ink:"2F2A38", mute:"6F6680", rule:"E3D8EE", card:"FBF8FF", link:"5E3A8C", page:""},
+  tealpink:{main:"0F6B70", acc:"C94F7C", line:"E58BA8", ink:"1F3436", mute:"5B7576", rule:"CBE5E6", card:"F2FAFA", link:"0F6B70", page:""}
+};
+var curPal = "vino";
+function palOf(R){ return PALS[(R && R.pal) || curPal] || PALS.vino; }
+
+/* ============ PDF: ПЕЧАТЬ ЧИСТОГО ДОКУМЕНТА ============ */
+function collectCss(){
+  var css = "";
+  Array.prototype.forEach.call(document.querySelectorAll("style"), function(st){
+    if(st.textContent.indexOf(".sov-app") >= 0 || st.textContent.indexOf(".matrix-app") >= 0) css += st.textContent + "\n";
+  });
+  return css;
+}
+function printDoc(R, bodyHtml){
+  var title = "Разбор совместимости" + ((R.names[0] && R.names[1]) ? ", " + R.names[0] + " и " + R.names[1] : "");
+  return '<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>' + esc(title) + "</title>"
+    + '<meta name="viewport" content="width=device-width,initial-scale=1">'
+    + (/^https?:/.test(location.protocol) ? '<link rel="stylesheet" href="' + location.origin + '/fonts.css">' : '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Marck+Script&display=swap&subset=cyrillic,cyrillic-ext,latin" rel="stylesheet">')
+    + "<style>" + collectCss() + "</style></head><body style=\"margin:0\">"
+    + '<div class="sov-printbar"><span>Откроется окно печати. Выберите «Сохранить как PDF».</span><button onclick="window.print()">Печать / PDF</button></div>'
+    + '<div class="matrix-app sov-app sov-print" data-pal="' + ((R && R.pal) || curPal) + '"><div class="sov-report">' + bodyHtml + "</div></div></body></html>";
+}
+/* Настоящий PDF собирается прямо в браузере (pdfmake), без окна печати:
+   в файл не попадают ни адрес сайта, ни номера страниц от браузера. */
+function matrixSvg(R){
+  var host = document.createElement("div");
+  host.className = "matrix-app sov-app";
+  host.style.cssText = "position:absolute;left:-9999px;top:0;width:600px;visibility:hidden;";
+  var slot = document.createElement("div");
+  slot.style.width = "600px";
+  host.appendChild(slot); document.body.appendChild(host);
+  try{
+    MX.renderMatrix(slot, R.P, false, true, false);
+    slot.style.width = "600px";
+    var svg = slot.querySelector("svg");
+    var plane = slot.querySelector(".mx-plane");
+    var pr = plane.getBoundingClientRect(), k = 600 / pr.width;
+    var out = svg.innerHTML.replace(/Playfair Display,serif/g, "Playfair").replace(/Montserrat,sans-serif/g, "Montserrat")
+      .replace(/ class="[^"]*"/g, "").replace(/ style="[^"]*"/g, "")
+      /* pdfmake не понимает градиенты и заливает их чёрным: убираем ореол и красим кольцо сплошным золотом */
+      .replace(/<defs>[\s\S]*?<\/defs>/g, "")
+      .replace(/<circle[^>]*fill="url\(#[^"]*\)"[^>]*\/>/g, "")
+      .replace(/stroke="url\(#[^"]*\)"/g, 'stroke="#C6A15B"');
+    function col(s){ var m = String(s || "").match(/rgba?\([^)]*\)/g); return m ? m : []; }
+    function hex(c){
+      var m = /rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+))?/.exec(c || "");
+      if(!m) return null;
+      return {c:"#" + [m[1], m[2], m[3]].map(function(x){ return ("0" + (+x).toString(16)).slice(-2); }).join(""), a:m[4] == null ? 1 : +m[4]};
+    }
+    Array.prototype.forEach.call(plane.querySelectorAll(".mx-node"), function(n){
+      var r = n.getBoundingClientRect(), cs = getComputedStyle(n);
+      var cx = (r.left + r.width / 2 - pr.left) * k, cy = (r.top + r.height / 2 - pr.top) * k, rad = r.width * k / 2;
+      var g = col(cs.backgroundImage), bg = hex(g.length ? g[Math.min(1, g.length - 1)] : cs.backgroundColor) || {c:"#FFFFFF", a:1};
+      var bd = hex(cs.borderTopColor) || {c:"#C6A15B", a:1}, bw = (parseFloat(cs.borderTopWidth) || 0) * k;
+      var fs = (parseFloat(cs.fontSize) || 12) * k, fg = (hex(cs.color) || {c:"#3A2A22"}).c;
+      out += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + (rad - bw / 2).toFixed(1) + '" fill="' + bg.c + '" fill-opacity="' + bg.a
+          + '" stroke="' + bd.c + '" stroke-width="' + Math.max(bw, .6).toFixed(2) + '"/>';
+      out += '<text x="' + cx.toFixed(1) + '" y="' + (cy + fs * .36).toFixed(1) + '" text-anchor="middle" font-family="Playfair" font-size="' + fs.toFixed(1)
+          + '" fill="' + fg + '">' + esc(n.textContent) + "</text>";
+    });
+    Array.prototype.forEach.call(plane.querySelectorAll(".mx-glyph"), function(n){
+      var r = n.getBoundingClientRect(), cs = getComputedStyle(n);
+      var cx = (r.left + r.width / 2 - pr.left) * k, cy = (r.top + r.height / 2 - pr.top) * k, fs = (parseFloat(cs.fontSize) || 12) * k;
+      if(/♥/.test(n.textContent)){
+        out += '<path transform="translate(' + (cx - 7).toFixed(1) + "," + (cy - 6).toFixed(1) + ') scale(.58)" fill="#B3414F" d="M12 21 C-6 8 2 -3 12 5 C22 -3 30 8 12 21Z"/>';
+      } else {
+        out += '<text x="' + cx.toFixed(1) + '" y="' + (cy + fs * .36).toFixed(1) + '" text-anchor="middle" font-family="Montserrat" font-weight="bold" font-size="' + fs.toFixed(1)
+            + '" fill="' + ((hex(cs.color) || {c:"#7E8C3E"}).c) + '">$</text>';
+      }
+    });
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="30 30 540 540" width="540" height="540">' + out + "</svg>";
+  } finally { document.body.removeChild(host); }
+}
+
+function buildPdfDef(R, svgStr){
+  var PL = palOf(R), WINE = "#" + PL.main, GOLD = "#" + PL.acc, INK = "#" + PL.ink, MUTE = "#" + PL.mute, LINE = "#" + PL.line, RULE = "#" + PL.rule, CARD = "#" + PL.card;
+  var opt = {lines:TYPES[R.type].lines};
+  var c = [];
+  function runs(text, base){
+    var out = [];
+    String(text).split(/(\*\*[^*]+\*\*|\*[^*]+\*)/).forEach(function(p){
+      if(!p) return;
+      var o = {text:p};
+      if(/^\*\*/.test(p)){ o.text = p.slice(2, -2); o.bold = true; }
+      else if(/^\*/.test(p)){ o.text = p.slice(1, -1); o.color = MUTE; }
+      Object.keys(base || {}).forEach(function(k){ if(o[k] == null) o[k] = base[k]; });
+      out.push(o);
+    });
+    return out;
+  }
+  function para(text, o){
+    o = o || {};
+    var r = {text:runs(text, o.run), margin:[0, 0, 0, o.after == null ? 7 : o.after], alignment:o.align};
+    if(o.margin) r.margin = o.margin;
+    return r;
+  }
+  function eyebrow(text){ return {text:String(text).toUpperCase(), fontSize:7.5, bold:true, color:GOLD, characterSpacing:1.6, margin:[0, 14, 0, 3]}; }
+  function head(eb, t){
+    return {stack:[eyebrow(eb), {text:t, font:"Playfair", fontSize:19, color:WINE, margin:[0, 0, 0, 3]},
+      {canvas:[{type:"line", x1:0, y1:0, x2:505, y2:0, lineWidth:.7, lineColor:LINE}], margin:[0, 2, 0, 9]}], unbreakable:true, headlineLevel:1};
+  }
+  function enHead(label, tag){
+    var ch = [{text:label, font:"Playfair", fontSize:13.5, color:WINE}];
+    if(tag) ch.push({text:"    " + tag.toUpperCase(), fontSize:7, bold:true, color:GOLD, characterSpacing:1});
+    return {text:ch, margin:[0, 12, 0, 4], headlineLevel:2};
+  }
+  function nodes(list){
+    list.forEach(function(n){
+      var t = n[0], v = n[1];
+      if(t === "sub") c.push({text:runs(v, {color:MUTE}), margin:[0, 0, 0, 7], headlineLevel:3});
+      else if(t === "h3"){
+        var neg = /^Негатив/.test(v);
+        c.push({text:String(v).toUpperCase(), fontSize:8, bold:true, color:neg ? WINE : GOLD, characterSpacing:1.2, margin:[0, 9, 0, 4], headlineLevel:3});
+      }
+      else if(t === "p") c.push(para(v));
+      else if(t === "ol" || t === "ul"){
+        var o = {margin:[10, 0, 0, 6], markerColor:GOLD};
+        o[t] = v.map(function(x){ return {text:runs(x), margin:[0, 0, 0, 3]}; });
+        c.push(o);
+      }
+      else if(t === "line" && opt.lines) c.push(para(v, {run:{color:MUTE}, margin:[12, 0, 0, 7]}));
+    });
+  }
+  function group(title, sub, brk){
+    var g = {text:String(title).toUpperCase(), fontSize:8.5, bold:true, color:GOLD, characterSpacing:1.8, margin:[0, brk ? 0 : 18, 0, 4], headlineLevel:1};
+    if(brk) g.pageBreak = "before";
+    c.push(g);
+    if(sub) c.push(para(sub, {run:{color:MUTE}}));
+  }
+
+  /* обложка */
+  var who = (R.names[0] && R.names[1]) ? R.names[0] + " и " + R.names[1] : "Ваша пара";
+  c.push({text:"МАТРИЦА СОВМЕСТИМОСТИ", fontSize:8, bold:true, color:GOLD, characterSpacing:2.4, alignment:"center", margin:[0, 100, 0, 22]});
+  c.push({text:"РАЗБОР СОВМЕСТИМОСТИ", font:"Playfair", fontSize:28, color:WINE, characterSpacing:1.2, alignment:"center", margin:[0, 0, 0, 12]});
+  c.push({text:who, font:"Playfair", fontSize:18, color:INK, alignment:"center", margin:[0, 0, 0, 5]});
+  c.push({text:R.dates[0] + "    ·    " + R.dates[1], fontSize:11, color:GOLD, alignment:"center", margin:[0, 0, 0, 5]});
+  c.push({text:TYPES[R.type].name, fontSize:9.5, color:MUTE, alignment:"center", margin:[0, 0, 0, 34]});
+  c.push(para(TXT.hello, {align:"center", margin:[30, 0, 30, 9]}));
+  c.push(para(TXT.scen, {align:"center", margin:[30, 0, 30, 9]}));
+
+  /* цифры и диаграмма */
+  var h = head("Ваша пара в цифрах", "Матрица совместимости"); h.pageBreak = "before"; c.push(h);
+  if(svgStr) c.push({svg:svgStr, width:250, alignment:"center", margin:[0, 0, 0, 8]});
+  c.push({
+    table:{widths:["*", 90], body:R.rows.map(function(r){
+      return [{text:r.label, fontSize:9, lineHeight:1.15, margin:[6, 0, 4, 0]},
+              {text:r.v.join(" · "), font:"Playfair", fontSize:11, lineHeight:1.15, color:WINE, alignment:"center", fillColor:CARD, margin:[0, 0, 0, 0]}];
+    })},
+    layout:{paddingTop:function(){ return 2; }, paddingBottom:function(){ return 2; }, hLineColor:RULE, vLineColor:RULE, hLineWidth:function(){ return .6; }, vLineWidth:function(){ return .6; }}
+  });
+
+  /* с первого взгляда */
+  c.push(head("С первого взгляда", R.seven.t));
+  c.push(enHead("Энергия точки А: " + R.P.a));
+  c.push(para(R.seven.x)); c.push(para(TXT.sevenLead, {run:{color:MUTE}}));
+
+  /* код */
+  c.push(head("Для чего вы встретились", "Код " + R.code.key));
+  if(R.code.found) nodes(R.code.nodes);
+  else {
+    c.push(para(TXT.codeMiss));
+    c.push({ul:R.codeNums.map(function(n){ return {text:runs("**" + n + " · " + (SOV.data.names[n] || "") + ".** " + (SOV.data.subs[n] || ""))}; }), margin:[10, 0, 0, 6]});
+  }
+
+  /* позиции */
+  R.sections.forEach(function(grp){
+    group(grp.g, grp.d);
+    grp.secs.forEach(function(sec){
+      c.push(head(sec.eb, sec.t));
+      if(sec.text) c.push(para(sec.text));
+      sec.items.forEach(function(it){
+        c.push(enHead(it.label, it.tag));
+        if(it.note) c.push(para(it.note, {run:{color:MUTE}}));
+        nodes(it.nodes);
+      });
+    });
+  });
+
+  if(R.progs.length){
+    var hp = head("Подсознательные программы", TXT.progT); hp.pageBreak = "before"; c.push(hp);
+    (SOV.data.GI || []).forEach(function(n){ c.push(para(n[1])); });
+    R.progs.forEach(function(pg){
+      c.push(enHead(pg.v.join(" · ") + "    " + pg.g.t, ""));
+      c.push(para(pg.where.join(". "), {run:{color:MUTE}}));
+      nodes(pg.g.n);
+    });
+  }
+  if(R.recs.length){
+    var hr = head("Рекомендации", TXT.recsT); hr.pageBreak = "before"; c.push(hr); c.push(para(TXT.recsLead));
+    R.recs.forEach(function(rc){ c.push(enHead(rc.label)); nodes(rc.nodes); });
+  }
+  if(R.practices.length){
+    var hq = head("Практики", TXT.practT); hq.pageBreak = "before"; c.push(hq); c.push(para(TXT.practLead));
+    R.practices.forEach(function(pr){ c.push(enHead(pr.label, pr.why)); nodes(pr.nodes); });
+  }
+
+  /* финал */
+  c.push(head("Дальше", TXT.nextT));
+  TXT.next.forEach(function(p){ c.push(para(p)); });
+  c.push({svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14"><path fill="' + GOLD + '" d="M12 0c.7 6.4 4.9 10.6 12 12-7.1 1.4-11.3 5.6-12 12-.7-6.4-4.9-10.6-12-12C7.1 10.6 11.3 6.4 12 0z"/></svg>', width:14, alignment:"center", margin:[0, 14, 0, 10]});
+  c.push(para(TXT.foot, {align:"center", run:{color:MUTE, fontSize:9}}));
+
+  return {
+    info:{title:fileBase(R)},
+    pageSize:"A4", pageMargins:[45, 48, 45, 48],
+    defaultStyle:{font:"Montserrat", fontSize:10, lineHeight:1.4, color:INK},
+    content:c,
+    pageBreakBefore:function(node, following){ return !!node.headlineLevel && following.length === 0; }
+  };
+}
+
+var PDF_FONTS = {
+  Montserrat:{normal:"mont-400.ttf", bold:"mont-600.ttf", italics:"mont-400.ttf", bolditalics:"mont-600.ttf"},
+  Playfair:{normal:"play-500.ttf", bold:"play-500.ttf", italics:"play-500.ttf", bolditalics:"play-500.ttf"}
+};
+function loadPdfLib(){
+  if(window.pdfMake && window.pdfMake.vfs && window.pdfMake.createPdf) return Promise.resolve();
+  return loadScript("pdfmake.min.js").then(function(){ return loadScript("pdf-fonts.js"); });
+}
+
+function exportPdfPrint(R){
+  var body = reportHtml(R, true);
+  var w = window.open("", "_blank");
+  if(w){
+    w.document.open(); w.document.write(printDoc(R, body)); w.document.close();
+    var slot = w.document.getElementById("sov-diagram-slot");
+    if(slot && MX.renderMatrix){ MX.renderMatrix(slot, R.P, false, true, false); }
+    var fire = function(){ try{ w.focus(); w.print(); }catch(e){} };
+    var go = function(){ setTimeout(fire, 700); };
+    if(w.document.fonts && w.document.fonts.ready){ w.document.fonts.ready.then(go); } else { w.addEventListener("load", go); }
+  }
+}
+
+function exportPdf(R){
+  return loadPdfLib().then(function(){
+    var svg = ""; try{ svg = matrixSvg(R); }catch(e){ if(window.console) console.warn("диаграмма не нарисовалась", e); }
+    var def = buildPdfDef(R, svg);
+    return new Promise(function(res, rej){
+      try{
+        window.pdfMake.fonts = PDF_FONTS;
+        window.pdfMake.createPdf(def).getBlob(function(blob){ download(blob, fileBase(R) + ".pdf"); res(); });
+      }catch(e){ rej(e); }
+    });
+  }).catch(function(err){
+    if(window.console) console.warn("PDF не собрался, открываем печать", err);
+    exportPdfPrint(R);
+  });
+}
+
+/* ============ WORD ============ */
+function download(blob, name){
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); document.body.removeChild(a); }, 1500);
+}
+function fileBase(R){
+  var nm = (R.names[0] && R.names[1]) ? " " + R.names[0] + " и " + R.names[1] : "";
+  return ("Разбор совместимости" + nm).replace(/[\\\/:*?"<>|]/g, "");
+}
+
+function loadDocx(){
+  if(window.docx) return Promise.resolve();
+  return loadScript(DOCX_URL).catch(function(){ return loadScript(DOCX_URL2); });
+}
+
+function buildDocx(R){
+  var X = window.docx;
+  var PL = palOf(R), WINE = PL.main, GOLD = PL.acc, INK = PL.ink, MUTE = PL.mute, LINE = PL.line, RULE = PL.rule, CARD = PL.card;
+  var HF = "Georgia", BF = "Calibri";
+  var opt = {lines:TYPES[R.type].lines};
+  var kids = [], listN = 0;
+
+  function runs(text, base){
+    var out = [], parts = String(text).split(/(\*\*[^*]+\*\*|\*[^*]+\*)/);
+    parts.forEach(function(p){
+      if(!p) return;
+      var o = {font:BF, size:22, color:INK};
+      Object.keys(base || {}).forEach(function(k){ o[k] = base[k]; });
+      if(/^\*\*/.test(p)){ o.text = p.slice(2, -2); o.bold = true; }
+      else if(/^\*/.test(p)){ o.text = p.slice(1, -1); o.italics = true; }
+      else o.text = p;
+      out.push(new X.TextRun(o));
+    });
+    return out;
+  }
+  function para(text, o){
+    o = o || {};
+    return new X.Paragraph({
+      children:runs(text, o.run), spacing:{after:o.after == null ? 140 : o.after, before:o.before || 0, line:312},
+      alignment:o.align, indent:o.indent, keepNext:o.keepNext,
+      border:o.border, shading:o.shading
+    });
+  }
+  function eyebrow(text){
+    return new X.Paragraph({children:[new X.TextRun({text:text.toUpperCase(), font:BF, size:17, color:GOLD, characterSpacing:50, bold:true})],
+      spacing:{before:360, after:60}, keepNext:true});
+  }
+  function h2(text){
+    return new X.Paragraph({heading:X.HeadingLevel.HEADING_2, keepNext:true, spacing:{after:140},
+      border:{bottom:{style:X.BorderStyle.SINGLE, size:6, color:LINE, space:6}},
+      children:[new X.TextRun({text:text, font:HF, size:40, color:WINE})]});
+  }
+  function enHead(label, tag){
+    var ch = [new X.TextRun({text:label, font:HF, size:28, bold:true, color:WINE})];
+    if(tag) ch.push(new X.TextRun({text:"   " + tag, font:BF, size:17, color:GOLD, bold:true, characterSpacing:30}));
+    return new X.Paragraph({children:ch, spacing:{before:260, after:80}, keepNext:true});
+  }
+  function nodesDocx(nodes){
+    nodes.forEach(function(n){
+      var t = n[0], v = n[1];
+      if(t === "sub") kids.push(para(v, {run:{italics:true, color:MUTE, size:23}, after:140, keepNext:true}));
+      else if(t === "h3"){
+        var neg = /^Негатив/.test(v);
+        kids.push(new X.Paragraph({keepNext:true, spacing:{before:200, after:80},
+          children:[new X.TextRun({text:(neg ? "" : "") + v.toUpperCase(), font:BF, size:19, bold:true, color:neg ? WINE : GOLD, characterSpacing:40})]}));
+      }
+      else if(t === "p") kids.push(para(v));
+      else if(t === "ol"){
+        listN++;
+        v.forEach(function(x){
+          kids.push(new X.Paragraph({children:runs(x), spacing:{after:90, line:312},
+            numbering:{reference:"sov-ol", level:0, instance:listN}}));
+        });
+      }
+      else if(t === "ul"){
+        v.forEach(function(x){
+          kids.push(new X.Paragraph({children:runs(x), spacing:{after:90, line:312}, bullet:{level:0}}));
+        });
+      }
+      else if(t === "line" && opt.lines){
+        kids.push(para(v, {run:{italics:true, color:MUTE}, indent:{left:300},
+          border:{left:{style:X.BorderStyle.SINGLE, size:12, color:LINE, space:10}}}));
+      }
+    });
+  }
+
+  /* шапка */
+  var who = (R.names[0] && R.names[1]) ? R.names[0] + " и " + R.names[1] : "Ваша пара";
+  kids.push(new X.Paragraph({alignment:X.AlignmentType.CENTER, spacing:{before:1400, after:200},
+    children:[new X.TextRun({text:"МАТРИЦА СОВМЕСТИМОСТИ", font:BF, size:17, color:GOLD, bold:true, characterSpacing:80})]}));
+  kids.push(new X.Paragraph({heading:X.HeadingLevel.TITLE, alignment:X.AlignmentType.CENTER, spacing:{after:120},
+    children:[new X.TextRun({text:"РАЗБОР СОВМЕСТИМОСТИ", font:HF, size:56, color:WINE, characterSpacing:30})]}));
+  kids.push(new X.Paragraph({alignment:X.AlignmentType.CENTER, spacing:{after:60},
+    children:[new X.TextRun({text:who, font:HF, size:34, color:INK})]}));
+  kids.push(new X.Paragraph({alignment:X.AlignmentType.CENTER, spacing:{after:60},
+    children:[new X.TextRun({text:R.dates[0] + "   ✦   " + R.dates[1], font:BF, size:22, color:GOLD})]}));
+  kids.push(new X.Paragraph({alignment:X.AlignmentType.CENTER, spacing:{after:360},
+    children:[new X.TextRun({text:TYPES[R.type].name, font:BF, size:20, color:MUTE})]}));
+  kids.push(para(TXT.hello)); kids.push(para(TXT.scen));
+
+  /* цифры */
+  kids.push(eyebrow("Ваша пара в цифрах")); kids.push(h2("Матрица совместимости"));
+  var bd = {style:X.BorderStyle.SINGLE, size:4, color:RULE};
+  var borders = {top:bd, bottom:bd, left:bd, right:bd};
+  var rowsT = R.rows.map(function(r){
+    return new X.TableRow({children:[
+      new X.TableCell({borders:borders, width:{size:6800, type:X.WidthType.DXA}, margins:{top:60, bottom:60, left:120, right:120},
+        children:[new X.Paragraph({children:[new X.TextRun({text:r.label, font:BF, size:21, color:INK})]})]}),
+      new X.TableCell({borders:borders, width:{size:2560, type:X.WidthType.DXA}, margins:{top:60, bottom:60, left:120, right:120},
+        shading:{type:X.ShadingType.CLEAR, fill:CARD, color:"auto"},
+        children:[new X.Paragraph({alignment:X.AlignmentType.CENTER, children:[new X.TextRun({text:r.v.join(" · "), font:HF, size:24, bold:true, color:WINE})]})]})
+    ]});
+  });
+  kids.push(new X.Table({width:{size:9360, type:X.WidthType.DXA}, columnWidths:[6800, 2560], rows:rowsT}));
+
+  /* с первого взгляда */
+  kids.push(eyebrow("С первого взгляда")); kids.push(h2(R.seven.t));
+  kids.push(enHead("Энергия точки А: " + R.P.a));
+  kids.push(para(R.seven.x)); kids.push(para(TXT.sevenLead, {run:{color:MUTE, italics:true}}));
+
+  /* код */
+  kids.push(eyebrow("Для чего вы встретились")); kids.push(h2("Код " + R.code.key));
+  if(R.code.found) nodesDocx(R.code.nodes);
+  else {
+    kids.push(para(TXT.codeMiss));
+    R.codeNums.forEach(function(n){
+      kids.push(new X.Paragraph({bullet:{level:0}, spacing:{after:90, line:312},
+        children:runs("**" + n + " · " + (SOV.data.names[n] || "") + ".** " + (SOV.data.subs[n] || ""))}));
+    });
+  }
+
+  /* позиции */
+  R.sections.forEach(function(grp){
+    kids.push(new X.Paragraph({pageBreakBefore:true, spacing:{after:80},
+      children:[new X.TextRun({text:grp.g.toUpperCase(), font:BF, size:20, bold:true, color:GOLD, characterSpacing:60})]}));
+    kids.push(para(grp.d, {run:{italics:true, color:MUTE}}));
+    grp.secs.forEach(function(sec){
+      kids.push(eyebrow(sec.eb)); kids.push(h2(sec.t));
+      if(sec.text) kids.push(para(sec.text));
+      sec.items.forEach(function(it){
+        kids.push(enHead(it.label, it.tag));
+        if(it.note) kids.push(para(it.note, {run:{italics:true, color:MUTE}}));
+        nodesDocx(it.nodes);
+      });
+    });
+  });
+
+  /* рекомендации */
+  if(R.progs.length){
+    kids.push(new X.Paragraph({pageBreakBefore:true, spacing:{after:80},
+      children:[new X.TextRun({text:"ПОДСОЗНАТЕЛЬНЫЕ ПРОГРАММЫ", font:BF, size:20, bold:true, color:GOLD, characterSpacing:60})]}));
+    kids.push(h2(TXT.progT));
+    (SOV.data.GI || []).forEach(function(n){ kids.push(para(n[1])); });
+    R.progs.forEach(function(pg){
+      kids.push(enHead(pg.v.join(" · ") + "   " + pg.g.t, ""));
+      kids.push(para(pg.where.join(". "), {run:{italics:true, color:MUTE}}));
+      nodesDocx(pg.g.n);
+    });
+  }
+  if(R.recs.length){
+    kids.push(new X.Paragraph({pageBreakBefore:true, spacing:{after:80},
+      children:[new X.TextRun({text:"РЕКОМЕНДАЦИИ", font:BF, size:20, bold:true, color:GOLD, characterSpacing:60})]}));
+    kids.push(h2(TXT.recsT)); kids.push(para(TXT.recsLead));
+    R.recs.forEach(function(rc){ kids.push(enHead(rc.label)); nodesDocx(rc.nodes); });
+  }
+
+  /* практики */
+  if(R.practices.length){
+    kids.push(new X.Paragraph({pageBreakBefore:true, spacing:{after:80},
+      children:[new X.TextRun({text:"ПРАКТИКИ", font:BF, size:20, bold:true, color:GOLD, characterSpacing:60})]}));
+    kids.push(h2(TXT.practT)); kids.push(para(TXT.practLead));
+    R.practices.forEach(function(pr){ kids.push(enHead(pr.label, pr.why)); nodesDocx(pr.nodes); });
+  }
+
+  /* финал */
+  kids.push(eyebrow("Дальше")); kids.push(h2(TXT.nextT));
+  TXT.next.forEach(function(p){ kids.push(para(p)); });
+  kids.push(new X.Paragraph({alignment:X.AlignmentType.CENTER, spacing:{before:300, after:200},
+    children:[new X.TextRun({text:"✦", font:BF, size:28, color:GOLD})]}));
+  kids.push(para(TXT.foot, {run:{color:MUTE, size:19}, align:X.AlignmentType.CENTER}));
+
+  return new X.Document({
+    title:fileBase(R),
+    styles:{default:{document:{run:{font:BF, size:22, color:INK}}}},
+    numbering:{config:[{reference:"sov-ol", levels:[{level:0, format:X.LevelFormat.DECIMAL, text:"%1.", alignment:X.AlignmentType.LEFT,
+      style:{paragraph:{indent:{left:540, hanging:340}}}}]}]},
+    sections:[{
+      properties:{page:{size:{width:11906, height:16838}, margin:{top:1134, bottom:1134, left:1247, right:1247}}},
+      children:kids
+    }]
+  });
+}
+
+/* Запасной вариант: файл .doc, который тоже открывается в Word */
+function docFallback(R){
+  var PL = palOf(R);
+  var css = "body{font-family:Calibri,Arial,sans-serif;color:#" + PL.ink + ";font-size:11pt;line-height:1.5}"
+    + "h1{font-family:Georgia,serif;color:#" + PL.main + ";text-align:center;font-size:26pt}"
+    + "h2{font-family:Georgia,serif;color:#" + PL.main + ";font-size:20pt;border-bottom:1px solid #" + PL.line + "}"
+    + "h3,h4{font-family:Georgia,serif;color:#" + PL.main + "}.sov-eyebrow{color:#" + PL.acc + ";font-size:8.5pt;letter-spacing:2px;text-transform:uppercase}"
+    + ".sov-mute,.sov-sub,.sov-note{color:#" + PL.mute + ";font-style:italic}.sov-disc{display:none}.sov-cover{text-align:center}"
+    + ".sov-diagram,.mx-matrix-outer{display:none}table{border-collapse:collapse}td{border:1px solid #" + PL.rule + ";padding:4px 8px}";
+  var html = reportHtml(R).replace(/<div class="mx-matrix-outer">.*?<\/div><\/div>/, "");
+  return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">'
+    + '<head><meta charset="utf-8"><title>' + esc(fileBase(R)) + "</title><style>" + css + "</style></head><body>" + html + "</body></html>";
+}
+
+function exportWord(R){
+  return loadDocx().then(function(){
+    return window.docx.Packer.toBlob(buildDocx(R));
+  }).then(function(blob){
+    download(blob, fileBase(R) + ".docx");
+  }).catch(function(err){
+    if(window.console) console.warn("docx не собрался, отдаём .doc", err);
+    download(new Blob(["﻿", docFallback(R)], {type:"application/msword"}), fileBase(R) + ".doc");
+  });
+}
+
+/* ============ ИНТЕРФЕЙС ============ */
+function $(id){ return document.getElementById(id); }
+
+function maskDate(el){
+  el.addEventListener("input", function(){
+    /* если человек сам ставит точки (1.1.1990), не мешаем */
+    if(/[^\d]/.test(el.value) && !/^\d{2}(\.\d{0,2}(\.\d{0,4})?)?$/.test(el.value)) return;
+    var v = el.value.replace(/\D/g, "").slice(0, 8), o = "";
+    if(v.length > 0) o = v.slice(0, 2);
+    if(v.length > 2) o += "." + v.slice(2, 4);
+    if(v.length > 4) o += "." + v.slice(4, 8);
+    el.value = o;
+  });
+}
+
+function init(){
+  var form = $("sov-form");
+  if(!form || form.getAttribute("data-ready")) return;
+  form.setAttribute("data-ready", "1");
+  maskDate($("sov-da")); maskDate($("sov-db"));
+
+  var last = null;
+  var root = $("sov-root");
+  function setPal(p){
+    if(!PALS[p]) p = "vino";
+    curPal = p;
+    if(root) root.setAttribute("data-pal", p);
+    Array.prototype.forEach.call(document.querySelectorAll("#sov-root .sov-pal button"), function(b){
+      b.className = (b.getAttribute("data-pal") === p) ? "is-on" : "";
+    });
+    if(last) last.pal = p;
+    try{ localStorage.setItem("sov-pal", p); }catch(e){}
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#sov-root .sov-pal button"), function(b){
+    b.addEventListener("click", function(){ setPal(b.getAttribute("data-pal")); });
+  });
+  var saved = "vino"; try{ saved = localStorage.getItem("sov-pal") || "vino"; }catch(e){}
+  setPal(saved);
+  function err(msg){
+    var e = $("sov-err"); e.textContent = msg || ""; e.style.display = msg ? "block" : "none";
+  }
+
+  form.addEventListener("submit", function(ev){
+    ev.preventDefault(); err("");
+    var a = parseDate($("sov-da").value), b = parseDate($("sov-db").value);
+    if(!a || !b){ err("Проверьте даты: нужен формат день.месяц.год, например 14.08.1990."); return; }
+    var btn = $("sov-go"); btn.disabled = true; btn.textContent = "Собираем разбор…";
+    loadData().then(function(D){
+      last = buildModel(D, {
+        a:{d:a.d, m:a.m, y:a.y, name:$("sov-na").value.trim()},
+        b:{d:b.d, m:b.m, y:b.y, name:$("sov-nb").value.trim()},
+        type:"pair", swap:false
+      });
+      last.pal = curPal;
+      var out = $("sov-out");
+      out.innerHTML = reportHtml(last);
+      var slot = $("sov-diagram-slot");
+      if(slot) MX.renderMatrix(slot, last.P, false, true, true);
+      $("sov-result").style.display = "block";
+      var club = document.querySelector("#sov-root .sov-club"); if(club) club.style.display = "none";
+      $("sov-result").scrollIntoView({behavior:"smooth", block:"start"});
+    }).catch(function(e){
+      if(window.console) console.error(e);
+      err("Не удалось загрузить тексты разбора. Обновите страницу и попробуйте ещё раз.");
+    }).then(function(){ btn.disabled = false; btn.textContent = "Получить разбор"; });
+  });
+
+  $("sov-pdf").addEventListener("click", function(){
+    if(!last) return;
+    var b = $("sov-pdf"); b.disabled = true;
+    exportPdf(last).then(function(){ b.disabled = false; });
+  });
+  $("sov-word").addEventListener("click", function(){
+    if(!last) return;
+    var b = $("sov-word"); b.disabled = true;
+    exportWord(last).then(function(){ b.disabled = false; });
+  });
+  $("sov-again").addEventListener("click", function(){
+    $("sov-result").style.display = "none";
+    var club2 = document.querySelector("#sov-root .sov-club"); if(club2) club2.style.display = "";
+    form.scrollIntoView({behavior:"smooth", block:"start"});
+  });
+}
+
+/* Для проверок вне браузера */
+SOV.parseDate = parseDate; SOV.layout = layout; SOV.buildModel = buildModel; SOV.reportHtml = reportHtml;
+SOV.printDoc = printDoc; SOV.PALS = PALS; SOV.setPalForTest = function(p){ curPal = p; }; SOV.buildDocx = buildDocx; SOV.buildPdfDef = buildPdfDef; SOV.matrixSvg = matrixSvg; SOV.docFallback = docFallback; SOV.TYPES = TYPES; SOV.TXT = TXT;
+
+if(typeof document !== "undefined" && document.getElementById){
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+}
+})();
+</script>
+</body></html>
